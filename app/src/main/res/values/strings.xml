@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Shopper</string>
+    <string name="budget_prompt">Enter your budget:</string>
+    <string name="budget_lbl">Your budget:</string>
+    <string name="budget_hint">0.00</string>
+    <string name="add_item_prompt">Add Item</string>
+    <string name="dollar_sign">$</string>
+    <string name="remove_prompt">Remove</string>
+    <string name="whitelist_prompt">W.L</string>
+    <string name="total_text">Total Cost: $</string>
+    <string name="initial_cost_text">0.00</string>
+    <string name="okay">Okay</string>
+    <string name="cancel">Cancel</string>
+    <string name="title_activity_optimized_list">OptimizedList</string>
+</resources>
