@@ -62,7 +62,7 @@ public class ZeroOneKnapsack {
     }
 
     /**
-     * Runs the knapsack algorithm.
+     * Starts the algorithm with the items that are in the items ArrayList.
      */
     private void start() {
         for(int itemIndex = 1; itemIndex <= numItems; itemIndex++) {
@@ -126,12 +126,6 @@ public class ZeroOneKnapsack {
         return units;
     }
 
-    /**
-     * Starts the algorithm with the items that are in the items ArrayList.
-     */
-    public void startKnapsack() {
-        initKnapsack();
-    }
 
     /**
      * Used for testing
