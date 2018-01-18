@@ -15,10 +15,12 @@ import android.widget.TextView;
 
 import com.example.patrick.shopper.CustomViews.ItemView;
 import com.example.patrick.shopper.R;
+import com.example.patrick.shopper.Threads.ThreadCompleteListener;
 
 import java.util.Locale;
+import java.util.concurrent.Callable;
 
-public class ShoppingListActivity extends AppCompatActivity {
+public class ShoppingListActivity extends AppCompatActivity implements ThreadCompleteListener {
 
     //Views that need to be accessed throughout the class
     private LinearLayout itemList;
@@ -282,15 +284,26 @@ public class ShoppingListActivity extends AppCompatActivity {
      * The items added to the list must be represented as a String.
      * @param view The button that was pressed associated with this method.
      */
-    public void maximizeList(View view) {
+    public void startMaximizingList(View view) {
         showProgressDialog();
+    }
 
+    /**
+     * Has finished maximizing the items, need to close the progress dialog and move to the
+     * next activity.
+     * @param call
+     */
+    @Override
+    public void notifyOfThreadComplete(Callable call) {
+        progressAlertDialog.dismiss();
 
+        //TODO finish implementing
         /*
         String itemListSummary = Summary.summarizeList(itemList);
 
         Intent intent = new Intent(ShoppingListActivity.this, MaximizedListActivity.class);
         intent.putExtra(Intent.EXTRA_TEXT, itemListSummary);
         startActivity(intent);*/
+
     }
 }
