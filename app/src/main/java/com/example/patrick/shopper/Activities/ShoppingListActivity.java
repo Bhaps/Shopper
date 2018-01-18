@@ -3,7 +3,6 @@ package com.example.patrick.shopper.Activities;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 
 import com.example.patrick.shopper.CustomViews.ItemView;
 import com.example.patrick.shopper.R;
-import com.example.patrick.shopper.Utility.Summary;
 
 import java.util.Locale;
 
@@ -41,10 +39,12 @@ public class ShoppingListActivity extends AppCompatActivity {
     //Custom views used to inflate dialog prompts.
     private View itemDetailsDialogView;
     private View budgetDialogView;
+    private View progressDialogView;
 
     //AlertDialog.show() are used to bring up prompts for the user to enter values
     private AlertDialog itemDetailsAlertDialog;
     private AlertDialog budgetAlertDialog;
+    private AlertDialog progressAlertDialog;
 
 
     @Override
@@ -61,7 +61,7 @@ public class ShoppingListActivity extends AppCompatActivity {
     private void initComponents() {
         initValues();
         initViews();
-        initializeDialogs();
+        initDialogs();
         initList();
 
         //Check if the user can maximize their items at the very beginning.
@@ -157,6 +157,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         itemDetailsDialogView = layoutInflater.inflate(R.layout.prompt_item_details, null);
         budgetDialogView = layoutInflater.inflate(R.layout.prompt_budget_view, null);
+        progressDialogView = layoutInflater.inflate(R.layout.loading_view, null);
 
 
         budgetTxtView.setOnClickListener(new View.OnClickListener() {
@@ -187,7 +188,7 @@ public class ShoppingListActivity extends AppCompatActivity {
     /**
      * Initialize the dialog prompt with a custom view.
      */
-    private void initializeDialogs() {
+    private void initDialogs() {
         //Create the dialog for prompting the user to enter an item's details
         AlertDialog.Builder itemDetailsAlertDialogBuilder = new AlertDialog.Builder(context);
         itemDetailsAlertDialogBuilder.setView(itemDetailsDialogView);
@@ -225,6 +226,13 @@ public class ShoppingListActivity extends AppCompatActivity {
                     }
                 });
         budgetAlertDialog = budgetAlertDialogBuilder.create();
+
+        //Create the dialog for displaying the progress bar when the user has selected the
+        //option to maximize their shopping list
+        AlertDialog.Builder progressAlertDialogBuilder = new AlertDialog.Builder(context);
+        progressAlertDialogBuilder.setView(progressDialogView);
+        progressAlertDialog = progressAlertDialogBuilder.create();
+        progressAlertDialog.setCanceledOnTouchOutside(false);
     }
 
 
@@ -261,17 +269,28 @@ public class ShoppingListActivity extends AppCompatActivity {
     }
 
     /**
+     * Show the dialog which displays a message and the progress indicator.
+     */
+    private void showProgressDialog() {
+        progressAlertDialog.show();
+    }
+
+    /**
      * Prepares the list to be send to a second activity. Also triggers the second activity
-     * to start.
+     * to start. //TODO change the description
      *
      * The items added to the list must be represented as a String.
      * @param view The button that was pressed associated with this method.
      */
     public void maximizeList(View view) {
+        showProgressDialog();
+
+
+        /*
         String itemListSummary = Summary.summarizeList(itemList);
 
         Intent intent = new Intent(ShoppingListActivity.this, MaximizedListActivity.class);
         intent.putExtra(Intent.EXTRA_TEXT, itemListSummary);
-        startActivity(intent);
+        startActivity(intent);*/
     }
 }
