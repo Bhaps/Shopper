@@ -1,5 +1,7 @@
 package com.example.patrick.shopper.Threads;
 
+import android.widget.LinearLayout;
+
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -14,7 +16,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Created by patrick on 19/01/18.
  */
 
-public abstract class NotifyingThread implements Callable {
+public abstract class NotifyingCallable implements Callable<String> {
+
     private final Set<ThreadCompleteListener> listeners = new CopyOnWriteArraySet<ThreadCompleteListener>();
 
     public final void addListener(final ThreadCompleteListener listener) {
@@ -31,18 +34,26 @@ public abstract class NotifyingThread implements Callable {
         }
     }
 
+    /**
+     * @return At the end, return a String representing all the items that are part of the maximized
+     * list.
+     */
     @Override
-    public final Object call() {
+    public final String call() throws Exception {
+        System.out.println("CALL WAS CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
+        String items;
         try {
-            doRun();
+            items = doRun();
         } finally {
             notifyListeners();
         }
-        return null;
+
+        System.out.println("THE CALL WILL END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        return items;
     }
 
     /**
      * Child class will implement doRun instead of run.
      */
-    public abstract void doRun();
+    public abstract String doRun() throws Exception;
 }

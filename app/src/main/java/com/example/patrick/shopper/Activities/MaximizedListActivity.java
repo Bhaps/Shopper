@@ -37,20 +37,16 @@ public class MaximizedListActivity extends AppCompatActivity {
      * Add all the items to be displayed.
      */
     private void displayItemViews() {
-        String itemSummary = getItemSummary();
+        String summarizedList = getItemSummary();
 
-        if(itemSummary.equals("")) {
+        if(summarizedList.equals("")) {
             //Do nothing
         } else {
 
-            //Remove the last delimiter character separating items
-            itemSummary.replaceAll(Summary.ITEM_DELIMITER + "%", "");
-
-            //Each element in the array is the data summary for a singular item
-            String[] items = itemSummary.split(Summary.ITEM_DELIMITER);
+            String[] items = Summary.separateSummarizedList(summarizedList);
 
             for (int itemIndex = 0; itemIndex < items.length; itemIndex++) {
-                String[] data = Summary.retrieveItemInfo(items[itemIndex]);
+                String[] data = Summary.separateItemInformation(items[itemIndex]);
 
                 String name = data[0];
                 Double price = Double.parseDouble(data[1]);

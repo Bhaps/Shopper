@@ -1,7 +1,6 @@
 package com.example.patrick.shopper.Utility;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -214,36 +213,6 @@ public class ZeroOneKnapsack {
         return units;
     }
 
-
-    /**
-     * Used for testing
-     * @param
-     */ /*
-    public static void main(String[] args) {
-        System.out.println("Started running");
-        ZeroOneKnapsack knapsack = new ZeroOneKnapsack(1.00);
-
-        //knapsack.initKnapsack();
-
-        knapsack.initKnapsack();
-        System.out.println("Finished initializing");
-
-        knapsack.addItem("A", 0.2);
-
-        System.out.println("Finished adding items.");
-
-        System.out.println("Started algorithm");
-
-        knapsack.startKnapsack();
-
-
-
-        knapsack.displayBoard();
-
-        System.out.println(knapsack.getSolution());
-
-        System.out.println("Done");
-    }*/
 
     public void displayBoard() {
         for(double[] row : board) {
