@@ -3,7 +3,6 @@ package com.example.patrick.shopper;
 import com.example.patrick.shopper.Utility.ZeroOneKnapsack;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;

@@ -13,13 +13,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.example.patrick.shopper.CustomViews.ItemView;
 import com.example.patrick.shopper.R;
 import com.example.patrick.shopper.Threads.StartMaximizedListActivity;
 import com.example.patrick.shopper.Threads.MaximizeItemsCallable;
 import com.example.patrick.shopper.Threads.ThreadCompleteListener;
-
 import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -75,25 +73,10 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         initViews();
         initDialogs();
         initList();
-        //initListeners();
 
         //Check if the user can maximize their items at the very beginning.
         setMaximizeBtnInteractability();
     }
-
-    /**
-     * Add this class to be a listener to the callable. Will know when it has ended and will
-     * execute further code with the result from the callable. Instantiate the Callable that
-     * will run the algorithm to maximize the added items and the ExecutorService that will
-     * handle concurrency.
-     */
-    /*
-    private void initListeners() {
-        maximizeItemsCall = new MaximizeItemsCallable(budget, itemList);
-        executorService = Executors.newSingleThreadExecutor();
-
-        maximizeItemsCall.addListener(this);
-    }*/
 
     /**
      * Initialize values for
@@ -336,11 +319,5 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
 
         Intent intent = new Intent(ShoppingListActivity.this, MaximizedListActivity.class);
         executorService.submit(new StartMaximizedListActivity(futureCall, intent, context));
-
-
-
-
-
-
     }
 }
