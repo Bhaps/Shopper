@@ -16,17 +16,15 @@ import android.widget.TextView;
 
 import com.example.patrick.shopper.CustomViews.ItemView;
 import com.example.patrick.shopper.R;
+import com.example.patrick.shopper.Threads.StartMaximizedListActivity;
 import com.example.patrick.shopper.Threads.MaximizeItemsCallable;
 import com.example.patrick.shopper.Threads.ThreadCompleteListener;
 
 import java.util.Locale;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 public class ShoppingListActivity extends AppCompatActivity implements ThreadCompleteListener {
 
@@ -77,7 +75,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         initViews();
         initDialogs();
         initList();
-        initListeners();
+        //initListeners();
 
         //Check if the user can maximize their items at the very beginning.
         setMaximizeBtnInteractability();
@@ -89,12 +87,13 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
      * will run the algorithm to maximize the added items and the ExecutorService that will
      * handle concurrency.
      */
+    /*
     private void initListeners() {
         maximizeItemsCall = new MaximizeItemsCallable(budget, itemList);
         executorService = Executors.newSingleThreadExecutor();
 
         maximizeItemsCall.addListener(this);
-    }
+    }*/
 
     /**
      * Initialize values for
@@ -313,8 +312,15 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     public void startMaximizingList(View view) {
         showProgressDialog();
 
+        maximizeItemsCall = new MaximizeItemsCallable(budget, itemList);
+        executorService = Executors.newSingleThreadExecutor();
+
+        maximizeItemsCall.addListener(this);
+
         futureCall = executorService.submit(maximizeItemsCall);
         System.out.println("Thread started!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+
 
     }
 
@@ -326,32 +332,15 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     @Override
     public void notifyOfThreadComplete(Callable call) {
         System.out.println("THE ACITVITY WAS NOTIFIED THAT THE THREAD HAS FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
-
-
-        String maximizedListSummary = null;
-
-        try {
-            System.out.println("ATTEMTPING TO GET THE RESULT FROM FUTURECALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-             maximizedListSummary = futureCall.get();
-             System.out.println("GOT THE RESULT FROM THE FUTURE CALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
         progressAlertDialog.dismiss();
 
-        System.out.println("THE MAXIMIZED LIST: " + maximizedListSummary);
-        //TODO finish implementing
-
-        //String itemListSummary = Summary.summarizeListAsString(itemList);
-
         Intent intent = new Intent(ShoppingListActivity.this, MaximizedListActivity.class);
-        //intent.putExtra(Intent.EXTRA_TEXT, itemListSummary);
-        intent.putExtra(Intent.EXTRA_TEXT, maximizedListSummary);
-        startActivity(intent);
+        executorService.submit(new StartMaximizedListActivity(futureCall, intent, context));
+
+
+
+
+
 
     }
 }

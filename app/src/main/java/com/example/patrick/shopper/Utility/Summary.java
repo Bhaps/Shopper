@@ -37,8 +37,9 @@ public abstract class Summary {
             summary += Integer.toString(item.getQuantity()) + INFO_DELIMITER;
             summary += ITEM_DELIMITER;
         }
-
+        //System.out.println("Summary before regex" + summary);
         summary.replaceAll(ITEM_DELIMITER + "%", "");
+        //System.out.println("Summary after regex" + summary);
         return summary;
     }
 
@@ -85,7 +86,13 @@ public abstract class Summary {
      * @return
      */
     public static double extractCost(String itemInformation) {
+        assert itemInformation.equals(null) : "itemInformation is null";
+
+        System.out.println("EXTRACOST ITEM INFORMATION: " + itemInformation.toString() + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.flush();
         String[] itemAtrributes = itemInformation.split(INFO_DELIMITER);
+        System.out.println(itemAtrributes);
+        System.out.flush();
         double itemCost = Double.parseDouble(itemAtrributes[ITEM_COST_INDEX]);
         return itemCost;
     }

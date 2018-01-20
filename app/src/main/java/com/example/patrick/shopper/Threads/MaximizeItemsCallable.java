@@ -37,19 +37,26 @@ public class MaximizeItemsCallable extends NotifyingCallable {
 
         System.out.println("DORUN WAS STARTED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-        /*
+
+
         ZeroOneKnapsack knapsack = new ZeroOneKnapsack(budget);
         knapsack.initKnapsack();
+        System.out.println("Instantiate knwpsack!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         //Add the items to the knapsack
         for(String itemSummary : itemsInfoArray) {
+            System.out.println("ITEM SUMMARY: " + itemSummary + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             double itemCost = Summary.extractCost(itemSummary);
             knapsack.addItem(itemSummary, itemCost);
         }
+        System.out.println("ADDED ALL THE ITEMS TO THE KNAPSACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
 
-        return  knapsack.solve();*/
+        String answer = knapsack.solve();
+        System.out.println("ANSWER: " + answer + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         System.out.println("DORUN IS ABOUT TO END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        return "";
+        return answer;
+
+
     }
 }
