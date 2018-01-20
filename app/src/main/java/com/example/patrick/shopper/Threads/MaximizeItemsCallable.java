@@ -1,8 +1,6 @@
 package com.example.patrick.shopper.Threads;
 
-import android.os.health.SystemHealthManager;
 import android.widget.LinearLayout;
-
 import com.example.patrick.shopper.Utility.Summary;
 import com.example.patrick.shopper.Utility.ZeroOneKnapsack;
 

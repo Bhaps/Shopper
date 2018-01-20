@@ -2,15 +2,8 @@ package com.example.patrick.shopper.Threads;
 
 import android.content.Context;
 import android.content.Intent;
-
-import com.example.patrick.shopper.Activities.MaximizedListActivity;
-import com.example.patrick.shopper.Activities.ShoppingListActivity;
-
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import static android.support.v4.content.ContextCompat.startActivity;
 
 /**
  * Callable thread to get the result from the MaximizeItemsCallable using Future.get() and

@@ -1,7 +1,5 @@
 package com.example.patrick.shopper.Threads;
 
-import android.widget.LinearLayout;
-
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArraySet;
