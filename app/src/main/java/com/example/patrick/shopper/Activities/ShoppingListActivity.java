@@ -10,8 +10,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.example.patrick.shopper.CustomViews.ItemView;
@@ -31,7 +31,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     private LinearLayout itemList;
     private TextView totalCostTxtView;
     private TextView budgetTxtView;
-    private Button maximizeBtn;
+    private ImageButton maximizeBtn;
 
     private double totalCost;
     private double budget;
@@ -170,9 +170,9 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     private void initViews() {
 
         itemList = findViewById(R.id.itemListLayout);
-        totalCostTxtView = findViewById(R.id.totalCostLblTxtview);
-        budgetTxtView = findViewById(R.id.budgetTxtView);
-        maximizeBtn = findViewById(R.id.maximizeBtn);
+        totalCostTxtView = findViewById(R.id.totalCostTxtView);
+        budgetTxtView = findViewById(R.id.displayBudgetTxtView);
+        maximizeBtn = findViewById(R.id.maximizeImgBtn);
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         itemDetailsDialogView = layoutInflater.inflate(R.layout.prompt_item_details, null);
