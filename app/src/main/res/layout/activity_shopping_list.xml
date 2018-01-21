@@ -45,7 +45,8 @@
             android:onClick="promptItemDetails"
             android:text="@string/add_item_prompt"
             tools:layout_editor_absoluteX="32dp"
-            tools:layout_editor_absoluteY="100dp" />
+            tools:layout_editor_absoluteY="100dp"
+            tools:ignore="MissingConstraints" />
 
         <TextView
             android:id="@+id/budetPromptTextView"
@@ -59,7 +60,8 @@
             android:textAlignment="center"
             app:layout_constraintEnd_toStartOf="@+id/budgetTxtView"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginRight="8dp" />
 
         <TextView
             android:id="@+id/budgetTxtView"
