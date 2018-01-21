@@ -1,0 +1,32 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/oldnameTxtView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="The name should be displayed. ERROR." />
+
+    <TextView
+        android:id="@+id/oldpriceTxtView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="The price should be displayed. ERROR." />
+
+    <TextView
+        android:id="@+id/oldquantityTxtView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="The quantity should be displayed. ERROR." />
+
+    <Button
+        android:id="@+id/oldremoveBtn"
+        android:layout_width="95dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:onClick="removeItem"
+        android:text="@string/remove_prompt" />
+
+
+
+
+</merge>

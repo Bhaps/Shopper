@@ -1,32 +1,82 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/nameTxtView"
-        android:text="The name should be displayed. ERROR."
+        android:id="@+id/topDivider"
+        style="@style/ShortDivider"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/bottomDivider"
+        style="@style/ShortDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <ImageButton
+        android:id="@+id/removeBtn"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"/>
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/bottomDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.501"
+        app:srcCompat="@drawable/ic_remove"
+        android:layout_marginRight="16dp" />
 
     <TextView
         android:id="@+id/priceTxtView"
-        android:text="The price should be displayed. ERROR."
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"/>
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:textColor="@android:color/black"
+        app:layout_constraintBaseline_toBaselineOf="@+id/quantityTxtView"
+        app:layout_constraintEnd_toStartOf="@+id/removeBtn"
+        app:layout_constraintStart_toEndOf="@+id/quantityTxtView"
+        tools:text="$ Price" />
 
     <TextView
         android:id="@+id/quantityTxtView"
-        android:text="The quantity should be displayed. ERROR."
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"/>
+        android:layout_marginEnd="8dp"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/priceTxtView"
+        app:layout_constraintStart_toEndOf="@+id/nameTxtView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Quantity"
+        android:layout_marginRight="8dp" />
 
-    <Button
-        android:id="@+id/removeBtn"
-        android:layout_width="95dp"
+    <TextView
+        android:id="@+id/nameTxtView"
+        android:layout_width="155dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:onClick="removeItem"
-        android:text="@string/remove_prompt" />
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:text="TextView"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/quantityTxtView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Item name"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="16dp" />
 
-
-
-
-</merge>
+</android.support.constraint.ConstraintLayout>

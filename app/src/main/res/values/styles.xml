@@ -25,12 +25,15 @@
         <item name="windowActionBar">true</item>
     </style>
 
-    
-    <style name="Divider" parent="CustomTheme">
-        <item name="android:background">@android:color/black</item>
+    <style name="LongDivider" parent="CustomTheme">
+        <item name="android:background">@color/darkerEmoRenee</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">2dp</item>
     </style>
 
+    <style name="ShortDivider" parent="CustomTheme">
+        <item name="android:background">@color/shortDividerColor</item>
+        <item name="android:layout_height">2dp</item>
+    </style>
 
 </resources>
