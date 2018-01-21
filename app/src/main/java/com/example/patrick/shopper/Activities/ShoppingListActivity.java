@@ -1,5 +1,6 @@
 package com.example.patrick.shopper.Activities;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -62,7 +63,16 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list);
 
+        setCustomActionBar();
         initComponents();
+    }
+
+    /**
+     * Personalize the ActionBar so centre it.
+     */
+    private void setCustomActionBar() {
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.custom_main_actionbar);
     }
 
     /**
@@ -160,7 +170,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     private void initViews() {
 
         itemList = findViewById(R.id.itemListLayout);
-        totalCostTxtView = findViewById(R.id.totalCostTxtView);
+        totalCostTxtView = findViewById(R.id.totalCostLblTxtview);
         budgetTxtView = findViewById(R.id.budgetTxtView);
         maximizeBtn = findViewById(R.id.maximizeBtn);
 

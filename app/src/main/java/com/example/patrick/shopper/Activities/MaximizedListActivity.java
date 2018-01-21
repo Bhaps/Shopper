@@ -1,5 +1,6 @@
 package com.example.patrick.shopper.Activities;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +24,23 @@ public class MaximizedListActivity extends AppCompatActivity {
 
         findViews();
         displayItemViews();
+        setCustomActionBar();
+    }
+
+    /**
+     * Customize the ActionBar as well as add the navigational arrow to return to the previous
+     * activity.
+     */
+    private void setCustomActionBar() {
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.custom_secondary_actionbar);
+
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 
     /**

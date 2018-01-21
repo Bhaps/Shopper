@@ -17,12 +17,20 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="RedTheme" parent="AppTheme" >
-        <item name="colorPrimary">@android:color/holo_red_dark</item>
+    <style name="CustomTheme" parent="Theme.AppCompat" >
+        <item name="colorPrimary">@color/emoRenee</item>
         <item name="colorPrimaryDark">@android:color/black</item>
         <item name="android:colorBackground">@color/colorPrimary</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">false</item>
+        <item name="windowActionBar">true</item>
     </style>
+
+    
+    <style name="Divider" parent="CustomTheme">
+        <item name="android:background">@android:color/black</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">2dp</item>
+    </style>
+
 
 </resources>

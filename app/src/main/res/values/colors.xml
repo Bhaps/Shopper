@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#c3c9db</color>
+    <color name="colorPrimary">#d0e0ff</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#e9ecf1</color>
+    <color name="emoRenee">#222430</color>
+    <color name="text_color_primary">#ff0000</color>
+    <color name="iconColor">#c56330</color>
+    <color name="darkerEmoRenee">#121419</color>
 </resources>
