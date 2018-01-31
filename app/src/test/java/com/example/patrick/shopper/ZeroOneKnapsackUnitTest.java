@@ -30,43 +30,156 @@ public class ZeroOneKnapsackUnitTest {
      * Test the boundary if we get the expected result when we enter a budget of 0.
      */
     @Test
-    public void calcUnitsZeroTest() {
+    public void calcUnitsZeroTestHighAccuracy() {
         double amount = 0.0;
 
+        knapsack.setUnitAccuracy(ZeroOneKnapsack.HIGH_ACCURACY_UNIT); //1 cent accuracy
         assertEquals(0, knapsack.calcUnits(amount, true));
         assertEquals(0, knapsack.calcUnits(amount, false));
+    }
+
+    /**
+     * Test the boundary if we get the expected result when we enter a budget of 0.
+     */
+    @Test
+    public void calcUnitsZeroTestMediumAccuracy() {
+        double amount = 0.0;
+
+        knapsack.setUnitAccuracy(ZeroOneKnapsack.MEDIUM_ACCURACY_UNIT); //10 cent accuracy
+        assertEquals(0, knapsack.calcUnits(amount, true));
+        assertEquals(0, knapsack.calcUnits(amount, false));
+    }
+    /**
+     * Test the boundary if we get the expected result when we enter a budget of 0.
+     */
+    @Test
+    public void calcUnitsZeroTestLowAccuracy() {
+        double amount = 0.0;
+
+        knapsack.setUnitAccuracy(ZeroOneKnapsack.LOW_ACCURACY_UNIT); //100 cent accuracy
+        assertEquals(0, knapsack.calcUnits(amount, true));
+        assertEquals(0, knapsack.calcUnits(amount, false));
+    }
+
+
+    /**
+     * Test if we get the correct result if we enter an amount that does not need rounding.
+     */
+    @Test
+    public void calcUnitsNormalTestHighAccuracy() {
+        knapsack.setUnitAccuracy(ZeroOneKnapsack.HIGH_ACCURACY_UNIT); //1 cent accuracy
+
+        double amount = 5.50;
+        assertEquals(550, knapsack.calcUnits(amount, true));
+        assertEquals(550, knapsack.calcUnits(amount, false));
+
+        double amount2 = 5.00;
+        assertEquals(500, knapsack.calcUnits(amount2, true));
+        assertEquals(500, knapsack.calcUnits(amount2, false));
+
+        double amount3 = 5.40;
+        assertEquals(540, knapsack.calcUnits(amount3, true));
+        assertEquals(540, knapsack.calcUnits(amount3, false));
     }
 
     /**
      * Test if we get the correct result if we enter an amount that does not need rounding.
      */
     @Test
-    public void calcUnitsNormalTest() {
-        double amount = 5.50;
+    public void calcUnitsNormalTestMediumAccuracy() {
+        knapsack.setUnitAccuracy(ZeroOneKnapsack.MEDIUM_ACCURACY_UNIT); //10 cent accuracy
 
+        double amount = 5.50;
         assertEquals(55, knapsack.calcUnits(amount, true));
         assertEquals(55, knapsack.calcUnits(amount, false));
 
         double amount2 = 5.00;
-
         assertEquals(50, knapsack.calcUnits(amount2, true));
         assertEquals(50, knapsack.calcUnits(amount2, false));
+
+        double amount3 = 5.40;
+        assertEquals(54, knapsack.calcUnits(amount3, true));
+        assertEquals(54, knapsack.calcUnits(amount3, false));
+    }
+
+    /**
+     * Test if we get the correct result if we enter an amount that does not need rounding.
+     */
+    @Test
+    public void calcUnitsNormalTestLowAccuracy() {
+        knapsack.setUnitAccuracy(ZeroOneKnapsack.LOW_ACCURACY_UNIT); //100 cent accuracy
+
+        double amount = 5.50;
+        assertEquals(6, knapsack.calcUnits(amount, true));
+        assertEquals(5, knapsack.calcUnits(amount, false));
+
+        double amount2 = 5.00;
+        assertEquals(5, knapsack.calcUnits(amount2, true));
+        assertEquals(5, knapsack.calcUnits(amount2, false));
+
+        double amount3 = 5.40;
+        assertEquals(6, knapsack.calcUnits(amount3, true));
+        assertEquals(5, knapsack.calcUnits(amount3, false));
     }
 
     /**
      * Test if we get the correct result if we enter an amount that needs rounding.
      */
     @Test
-    public void calcUnitsRoundTest() {
-        double amount = 5.55;
+    public void calcUnitsTestHighAccuracy() {
+        knapsack.setUnitAccuracy(ZeroOneKnapsack.HIGH_ACCURACY_UNIT); //1 cent accuracy
 
+        double amount = 5.55;
+        assertEquals(555, knapsack.calcUnits(amount, true));
+        assertEquals(555, knapsack.calcUnits(amount, false));
+
+        double amount2 = 5.54;
+        assertEquals(554, knapsack.calcUnits(amount2, true));
+        assertEquals(554, knapsack.calcUnits(amount2, false));
+
+        double amount3 = 5.00;
+        assertEquals(500, knapsack.calcUnits(amount3, true));
+        assertEquals(500, knapsack.calcUnits(amount3, false));
+    }
+
+    /**
+     * Test if we get the correct result if we enter an amount that needs rounding.
+     */
+    @Test
+    public void calcUnitsTestMediumAccuracy() {
+        knapsack.setUnitAccuracy(ZeroOneKnapsack.MEDIUM_ACCURACY_UNIT); //10 cent accuracy
+
+        double amount = 5.55;
         assertEquals(56, knapsack.calcUnits(amount, true));
         assertEquals(55, knapsack.calcUnits(amount, false));
 
         double amount2 = 5.54;
-
-        assertEquals(55, knapsack.calcUnits(amount2, true));
+        assertEquals(56, knapsack.calcUnits(amount2, true));
         assertEquals(55, knapsack.calcUnits(amount2, false));
+
+        double amount3 = 5.00;
+        assertEquals(50, knapsack.calcUnits(amount3, true));
+        assertEquals(50, knapsack.calcUnits(amount3, false));
+    }
+
+    /**
+     * Test if we get the correct result if we enter an amount that needs rounding.
+     */
+    @Test
+    public void calcUnitsTestLowAccuracy() {
+        knapsack.setUnitAccuracy(ZeroOneKnapsack.LOW_ACCURACY_UNIT); //100 cent accuracy
+
+        double amount = 5.55;
+        assertEquals(6, knapsack.calcUnits(amount, true));
+        assertEquals(5, knapsack.calcUnits(amount, false));
+
+        double amount2 = 5.54;
+        assertEquals(6, knapsack.calcUnits(amount2, true));
+        assertEquals(5, knapsack.calcUnits(amount2, false));
+
+        double amount3 = 5.00;
+        assertEquals(5, knapsack.calcUnits(amount3, true));
+        assertEquals(5, knapsack.calcUnits(amount3, false));
     }
 
     /**
@@ -122,9 +235,16 @@ public class ZeroOneKnapsackUnitTest {
         //System.out.println(solution);
 
         assertTrue(modelSolution.equals(solution));
+    }
 
-
-
+    /**
+     * Test if the algorithm gives the correct result when no items are added.
+     */
+    @Test
+    public void solveTestNone() {
+        String modelSolution = "";
+        String solution = knapsack.solve();
+        assertTrue(modelSolution.equals(solution));
     }
 
 }

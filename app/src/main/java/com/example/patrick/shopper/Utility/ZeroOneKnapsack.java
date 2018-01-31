@@ -13,14 +13,23 @@ import java.util.Collections;
 
 public class ZeroOneKnapsack {
 
+    //The different available units which determines the accuracy of the solution.
+    //All values will be rounded to 1, 10 or 100 cent accuracy. The higher the accuracy the more
+    //resource intensive the zero one knapsack algorithm will be.
+    public static final Double HIGH_ACCURACY_UNIT = 1.0; // 1 cent accuracy
+    public static final Double MEDIUM_ACCURACY_UNIT = 10.0; // 10 cents accuracy
+    public static final Double LOW_ACCURACY_UNIT = 100.0; // 1 dollar accuracy
+
     private ArrayList<Item> items;
     private double[][] board; //Used in the algorithm
     private Double budget; //The maximum weight that can be taken i.e. the budget in dollars
     public final static Double DEFAULT_VALUE = 1.0;
-    private final Double BASIC_UNIT = 10.0; //10 cents
 
     private int numItems;
     private int maxCapacityUnits;
+
+    // One unit is equal to the amount of cents the variable holds.
+    private Double basicUnit = HIGH_ACCURACY_UNIT;
 
     /**
      *
@@ -28,6 +37,23 @@ public class ZeroOneKnapsack {
      */
     public ZeroOneKnapsack(Double budget) {
         this.budget = budget;
+    }
+
+    /**
+     * Change the accuracy of basicUnit variable (in cents) which is used in calculating how much
+     * an amount in terms of 'basic units'.
+     * @param accuracy The amount in cents a unit will be. Use the defined constants.
+     *                 HIGH_ACCURACY_UNIT, MEDIUM_ACCURACY_UNIT or LOW_ACCURACY_UNIT
+     */
+    public void setUnitAccuracy(Double accuracy) {
+        basicUnit = accuracy;
+    }
+
+    /**
+     * @return Get the current value in cents a unit is.
+     */
+    public Double getUnitAccuracy() {
+        return basicUnit;
     }
 
     /**
@@ -200,12 +226,12 @@ public class ZeroOneKnapsack {
     public int calcUnits(Double amountDollars, boolean roundUp) {
         Double amountCents = amountDollars * 100.0;
 
-        double result = Math.round(amountCents) / BASIC_UNIT;
+        double result = Math.round(amountCents) / basicUnit;
 
         int units;
 
         if(roundUp) {
-            units = (int) Math.round(result);
+            units = (int) Math.ceil(result);
         } else {
             units = (int) Math.floor(result);
         }
@@ -213,7 +239,9 @@ public class ZeroOneKnapsack {
         return units;
     }
 
-
+    /**
+     * Used in debugging. Display the contents of the grid used in the algorithm.
+     */
     public void displayBoard() {
         for(double[] row : board) {
             for(double element : row) {
