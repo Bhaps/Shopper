@@ -79,22 +79,45 @@ public abstract class Summary {
         return separateSummarizedList(summarizeListAsString(itemList));
     }
 
+    /**
+     * Get the name of the item from the summary of an item's attributes.
+     * @param itemInformation
+     * @return The name from the information provided.
+     */
+    public static String extractName(String itemInformation) {
+        assert itemInformation.equals(null) : "itemInformation is null";
+
+        String[] itemAtrributes = itemInformation.split(INFO_DELIMITER);
+        String itemName = itemAtrributes[ITEM_NAME_INDEX];
+        return itemName;
+    }
 
     /**
      * Get the cost of the item from the summary of an item's attributes.
      * @param itemInformation
-     * @return
+     * @return The price of the item.
      */
     public static double extractCost(String itemInformation) {
+        System.out.println("Provided information: " + itemInformation);
+
         assert itemInformation.equals(null) : "itemInformation is null";
 
-        System.out.println("EXTRACOST ITEM INFORMATION: " + itemInformation.toString() + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.flush();
         String[] itemAtrributes = itemInformation.split(INFO_DELIMITER);
-        System.out.println(itemAtrributes);
-        System.out.flush();
         double itemCost = Double.parseDouble(itemAtrributes[ITEM_COST_INDEX]);
         return itemCost;
+    }
+
+    /**
+     * Get the quantity of the item from the summary of an item's attributes.
+     * @param itemInformation
+     * @return The quantity from the information provided.
+     */
+    public static int extractQuantity(String itemInformation) {
+        assert itemInformation.equals(null) : "itemInformation is null";
+
+        String[] itemAtrributes = itemInformation.split(INFO_DELIMITER);
+        int itemQuantity = Integer.parseInt(itemAtrributes[ITEM_QUANTITY_INDEX]);
+        return itemQuantity;
     }
 
 

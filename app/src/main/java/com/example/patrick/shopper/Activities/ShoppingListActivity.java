@@ -19,6 +19,9 @@ import com.example.patrick.shopper.R;
 import com.example.patrick.shopper.Threads.StartMaximizedListActivity;
 import com.example.patrick.shopper.Threads.MaximizeItemsCallable;
 import com.example.patrick.shopper.Threads.ThreadCompleteListener;
+import com.example.patrick.shopper.Utility.Storage;
+import com.example.patrick.shopper.Utility.Summary;
+
 import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -65,6 +68,49 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
 
         setCustomActionBar();
         initComponents();
+        loadItems();
+    }
+
+    /**
+     * When your activity is no longer visible to the user, it has entered the Stopped state,
+     * and the system invokes the onStop() callback. This may occur, for example, when a newly
+     * launched activity covers the entire screen. The system may also call onStop() when the
+     * activity has finished running, and is about to be terminated.
+     */
+    @Override
+    public void onStop() {
+        super.onStop();
+        saveListedItems();
+    }
+
+    /**
+     * Summarize the items currently added to the list and then store the summary.
+     */
+    private void saveListedItems() {
+        String itemSummary = Summary.summarizeListAsString(itemList);
+        Storage.saveItemSummary(itemSummary, context);
+    }
+
+    /**
+     * Load the previously added items.
+     */
+    private void loadItems() {
+        //Get the summary of items that were previously added
+        String previousItemSummary = Storage.getItemSummary(context);
+
+        if(previousItemSummary.equals("")) {
+            //Do nothing, there were no previous items added before.
+        } else {
+            String[] previousItem = Summary.separateItemInformation(previousItemSummary);
+
+            for (String itemInfo : previousItem) {
+                String name = Summary.extractName(itemInfo);
+                double price = Summary.extractCost(itemInfo);
+                int quantity = Summary.extractQuantity(itemInfo);
+
+                addItemToList(createItem(name, price, quantity));
+            }
+        }
     }
 
     /**
@@ -197,9 +243,8 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
      * Create an ItemView containing all the information of the represented item.
      * @return ItemView containing details of an item it represents.
      */
-    private ItemView createItem() {
-        ItemView newItem = new ItemView(context,
-                lastEnteredName, lastEnteredPrice, lastEnteredQuantity);
+    private ItemView createItem(String name, double price, int quantity) {
+        ItemView newItem = new ItemView(context, name, price, quantity);
 
 
         return newItem;
@@ -222,7 +267,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         getEnteredItemValues();
-                        ItemView newItem = createItem();
+                        ItemView newItem = createItem(lastEnteredName, lastEnteredPrice, lastEnteredQuantity);
                         addItemToList(newItem);
                         dialogInterface.dismiss();
                     }

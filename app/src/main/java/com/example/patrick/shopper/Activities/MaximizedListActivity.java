@@ -25,25 +25,7 @@ public class MaximizedListActivity extends AppCompatActivity {
         findViews();
         displayItemViews();
         setCustomActionBar();
-        loadItems();
-
     }
-
-    /**
-     * Load the previously added items.
-     */
-    private void loadItems() {
-
-    }
-
-    /**
-     * Save the list of items
-     */ /*
-    @Override
-    public void onPause() {
-        super.onPause();
-
-    }*/
 
     /**
      * Customize the ActionBar as well as add the navigational arrow to return to the previous
