@@ -216,18 +216,20 @@ public abstract class Storage {
     /**
      * Clear the contents of the file by writing the empty string to the start of the file.
      */
-    /*
-    public static void clearFileContent() {
-        FileOutputStream fos = openFileOutputStream();
 
+    public static void clearFileContent(Context context) {
+        FileOutputStream fos = null;
         try {
+            fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
             fos.write("".getBytes());
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        closeFileStream(fos);
-    }*/
+    }
 
     /**
      * Create an empty file.
@@ -265,7 +267,7 @@ public abstract class Storage {
         //clearFileContent();
         //saveItemSummary("A;1.0;1");
 
-        System.out.println("aa".replaceAll("a$", ""));
+        //System.out.println("aa".replaceAll("a$", ""));
     }
 
 }

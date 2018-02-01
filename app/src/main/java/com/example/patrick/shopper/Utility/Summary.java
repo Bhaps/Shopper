@@ -16,7 +16,7 @@ import com.example.patrick.shopper.CustomViews.ItemView;
 public abstract class Summary {
 
     public static String INFO_DELIMITER = ";"; //Separates name, price and quantity attributes
-    public static String ITEM_DELIMITER = "\n";
+    public static String ITEM_DELIMITER = System.getProperty("line.separator");
 
     public static final int ITEM_NAME_INDEX = 0;
     public static final int ITEM_COST_INDEX = 1;

@@ -22,6 +22,7 @@ import com.example.patrick.shopper.Threads.ThreadCompleteListener;
 import com.example.patrick.shopper.Utility.Storage;
 import com.example.patrick.shopper.Utility.Summary;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -89,21 +90,29 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     private void saveListedItems() {
         String itemSummary = Summary.summarizeListAsString(itemList);
         Storage.saveItemSummary(itemSummary, context);
+
+        System.out.println("Will save the items: " + itemSummary);
     }
 
     /**
      * Load the previously added items.
      */
     private void loadItems() {
+        //Storage.clearFileContent(context); //Uncomment to manually clear the contents
+
         //Get the summary of items that were previously added
         String previousItemSummary = Storage.getItemSummary(context);
+
+        System.out.println("Retrieved item summary!!!!!!!: " + previousItemSummary);
 
         if(previousItemSummary.equals("")) {
             //Do nothing, there were no previous items added before.
         } else {
-            String[] previousItem = Summary.separateItemInformation(previousItemSummary);
+            String[] previousItems = Summary.separateSummarizedList(previousItemSummary);
 
-            for (String itemInfo : previousItem) {
+            System.out.println("After the summary is separated: " + Arrays.deepToString(previousItems));
+
+            for (String itemInfo : previousItems) {
                 String name = Summary.extractName(itemInfo);
                 double price = Summary.extractCost(itemInfo);
                 int quantity = Summary.extractQuantity(itemInfo);
