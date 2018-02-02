@@ -31,7 +31,6 @@ public class StartMaximizedListActivity implements Runnable {
 
 
         try {
-            System.out.println("FUTURE.GET() IS ABOUT TO GET CALLED SO SHOULD BLOCK THE RESULTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             maximizedListSummary = (String) future.get();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -40,8 +39,6 @@ public class StartMaximizedListActivity implements Runnable {
         }
 
         System.out.flush();
-        System.out.println("MAXIMIZEDLISTSUMMARY: " + maximizedListSummary + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
         intent.putExtra(Intent.EXTRA_TEXT, maximizedListSummary);
         context.startActivity(intent);
 

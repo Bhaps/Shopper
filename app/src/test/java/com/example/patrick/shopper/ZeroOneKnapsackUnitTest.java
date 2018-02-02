@@ -218,16 +218,25 @@ public class ZeroOneKnapsackUnitTest {
      */
     @Test
     public void solveTest() {
-        knapsack.addItem("A", 1.00);
-        knapsack.addItem("B", 1.20);
-        knapsack.addItem("C", 5.00);
-        knapsack.addItem("D", 2.10);
-        knapsack.addItem("E", 0.90);
-        knapsack.addItem("F", 0.70);
+        String itemAInfo = "A" + Summary.INFO_DELIMITER + "1.00" + Summary.INFO_DELIMITER + "1";
+        String itemBInfo = "B" + Summary.INFO_DELIMITER + "1.20" + Summary.INFO_DELIMITER + "1";
+        String itemCInfo = "C" + Summary.INFO_DELIMITER + "5.00" + Summary.INFO_DELIMITER + "1";
+        String itemDInfo = "D" + Summary.INFO_DELIMITER + "2.10" + Summary.INFO_DELIMITER + "1";
+        String itemEInfo = "E" + Summary.INFO_DELIMITER + "0.90" + Summary.INFO_DELIMITER + "1";
+        String itemFInfo = "F" + Summary.INFO_DELIMITER + "0.70" + Summary.INFO_DELIMITER + "1";
+
+        knapsack.addItem(itemAInfo, 1.00);
+        knapsack.addItem(itemBInfo, 1.20);
+        knapsack.addItem(itemCInfo, 5.00);
+        knapsack.addItem(itemDInfo, 2.10);
+        knapsack.addItem(itemEInfo, 0.90);
+        knapsack.addItem(itemFInfo, 0.70);
 
         //System.out.println(knapsack.getItems());
 
-        String modelSolution = "A" + Summary.ITEM_DELIMITER + "D" + Summary.ITEM_DELIMITER + "F";
+        String modelSolution = itemAInfo + Summary.ITEM_DELIMITER +
+                itemBInfo + Summary.ITEM_DELIMITER + itemDInfo + Summary.ITEM_DELIMITER +
+                itemFInfo;
 
         String solution = knapsack.solve();
 
@@ -241,10 +250,11 @@ public class ZeroOneKnapsackUnitTest {
     @Test
     public void solveTest2() {
         String itemInfo1 = "Item1;1.00;1;";
-        String itemInfo2 = "Item2;2.00;2;";
+        String itemInfo2 = "Item2;2.00;1;";
         String itemInfo3 = "Item3;1.50;1";
 
-        String modelSolution = itemInfo1 + Summary.ITEM_DELIMITER + itemInfo2;
+        String modelSolution = itemInfo1 + Summary.ITEM_DELIMITER + itemInfo2 +
+                Summary.ITEM_DELIMITER + itemInfo3;
 
         knapsack.setBudget(5.00);
         knapsack.addItem(itemInfo1, 1.00);
@@ -253,7 +263,7 @@ public class ZeroOneKnapsackUnitTest {
 
         String solution = knapsack.solve();
 
-        System.out.println("Solution: " + solution);
+        //System.out.println("Solution: " + solution);
 
         assertTrue(solution.equals(modelSolution));
     }

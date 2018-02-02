@@ -295,7 +295,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                 .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        getEnteredBudget();
+                        budget = getEnteredBudget();
                         updateBudget();
                     }
                 });
@@ -336,10 +336,10 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     /**
      * Retrieve the values entered by the user for the budget in the dialog.
      */
-    private void getEnteredBudget() {
+    private double getEnteredBudget() throws NumberFormatException {
         EditText budgetEditTxt = budgetDialogView.findViewById(R.id.budgetEditText);
-        budget = Double.parseDouble(budgetEditTxt.getText().toString());
-
+        //budget = Double.parseDouble(budgetEditTxt.getText().toString());
+        return Double.parseDouble(budgetEditTxt.getText().toString());
     }
 
     /**
@@ -357,15 +357,30 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
      * @param view The button that was pressed associated with this method.
      */
     public void startMaximizingList(View view) {
-        showProgressDialog();
+        //First check that a budget has been entered.
+        try {
+            double enteredBudget = getEnteredBudget();
 
-        maximizeItemsCall = new MaximizeItemsCallable(budget, itemList);
-        executorService = Executors.newSingleThreadExecutor();
+            if(enteredBudget <= 0.0) {
+                throw new NumberFormatException("The budget can not be zero or negative.");
+            }
 
-        maximizeItemsCall.addListener(this);
+            showProgressDialog();
 
-        futureCall = executorService.submit(maximizeItemsCall);
-        System.out.println("Thread started!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            maximizeItemsCall = new MaximizeItemsCallable(budget, itemList);
+            executorService = Executors.newSingleThreadExecutor();
+
+            maximizeItemsCall.addListener(this);
+
+            futureCall = executorService.submit(maximizeItemsCall);
+            System.out.println("Thread started!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        } catch (NumberFormatException e){
+            //TODO show error message.
+            System.out.println("did not enter a valid budget");
+            e.printStackTrace();
+        }
+
+
 
 
 

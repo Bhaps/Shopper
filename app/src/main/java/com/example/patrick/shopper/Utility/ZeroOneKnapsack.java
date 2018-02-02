@@ -184,9 +184,12 @@ public class ZeroOneKnapsack {
             summary += item.getInformation() + Summary.ITEM_DELIMITER;
         }
 
+        System.out.println("Before: " + summary);
         //Remove the last item delimeter as it shouldn't be there since there isn't another
         //item following it.
-        summary.replaceAll(Summary.ITEM_DELIMITER + "$", "");
+        summary = summary.replaceAll(Summary.ITEM_DELIMITER + "$", "");
+
+        System.out.println("After replace: " + summary);
 
         return summary;
 

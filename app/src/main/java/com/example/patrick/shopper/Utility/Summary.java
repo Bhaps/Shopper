@@ -6,9 +6,10 @@ import com.example.patrick.shopper.CustomViews.ItemView;
 
 /**
  * Can not send views between activities. This abstract class will provide utility to summarize
- * all the listed items in a string format that can be sent. Will also provide utility to
- * separate the summarized list into individual Strings which summarizes the data of a single item.
- * As well as provide functionality to extract a single attribute of an item given its summary.
+ * all the listed items in a string format that can be sent between activities and stored in
+ * persistent storage. Will also provide utility to separate the summarized list into individual
+ * Strings which summarizes the data of a single item. As well as provide functionality to extract
+ * a single attribute of an item given its summary.
  *
  * Created by patrick on 13/01/18.
  */
@@ -32,15 +33,26 @@ public abstract class Summary {
         String summary = "";
         for(int itemIndex = 0; itemIndex < itemList.getChildCount(); itemIndex++) {
             ItemView item = (ItemView) itemList.getChildAt(itemIndex);
-            summary += item.getName() + INFO_DELIMITER;
-            summary += Double.toString(item.getSinglePrice()) + INFO_DELIMITER;
-            summary += Integer.toString(item.getQuantity()) + INFO_DELIMITER;
+            summary += createItemInfo(item.getName(), item.getSinglePrice(), item.getQuantity());
             summary += ITEM_DELIMITER;
         }
         //System.out.println("Summary before regex" + summary);
-        summary.replaceAll(ITEM_DELIMITER + "%", "");
+        summary = summary.replaceAll(ITEM_DELIMITER + "%", "");
         //System.out.println("Summary after regex" + summary);
         return summary;
+    }
+
+    /**
+     * Collect an item's information and group it together into a format that is used throughout
+     * the applicaiton.
+     * @param name The name of the item.
+     * @param cost Thee cost of a single item.
+     * @param quantity The quantity of the same item added ot the list.
+     * @return A String where name, cost and quantity are separated by the ITEM_INFO_DELIMETER
+     */
+    public static String createItemInfo(String name, double cost, int quantity) {
+        return name + INFO_DELIMITER + Double.toString(cost) + INFO_DELIMITER +
+                Integer.toString(quantity);
     }
 
     /**

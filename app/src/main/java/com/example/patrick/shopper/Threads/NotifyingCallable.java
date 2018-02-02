@@ -38,7 +38,6 @@ public abstract class NotifyingCallable implements Callable<String> {
      */
     @Override
     public final String call() throws Exception {
-        System.out.println("CALL WAS CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
         String items;
         try {
             items = doRun();
@@ -46,7 +45,6 @@ public abstract class NotifyingCallable implements Callable<String> {
             notifyListeners();
         }
 
-        System.out.println("THE CALL WILL END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         return items;
     }
 
