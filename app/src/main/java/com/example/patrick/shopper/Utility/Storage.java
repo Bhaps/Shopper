@@ -4,12 +4,15 @@ import android.content.Context;
 import android.os.Environment;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -202,9 +205,11 @@ public abstract class Storage {
         System.out.println("Provided item summary: " + itemSummary);
 
         try {
-            FileOutputStream fis = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            fis.write(itemSummary.getBytes());
-            fis.close();
+            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
+            BufferedWriter bw = new BufferedWriter(outputStreamWriter);
+            bw.write(itemSummary);
+            bw.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -267,7 +272,8 @@ public abstract class Storage {
         //clearFileContent();
         //saveItemSummary("A;1.0;1");
 
-        //System.out.println("aa".replaceAll("a$", ""));
+        System.out.println("aa".getBytes());
+        System.out.println("\n".getBytes());
     }
 
 }
