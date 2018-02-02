@@ -1,5 +1,6 @@
 package com.example.patrick.shopper;
 
+import com.example.patrick.shopper.Utility.Summary;
 import com.example.patrick.shopper.Utility.ZeroOneKnapsack;
 
 import org.junit.Before;
@@ -226,7 +227,7 @@ public class ZeroOneKnapsackUnitTest {
 
         //System.out.println(knapsack.getItems());
 
-        String modelSolution = "A\nB\nD\nF";
+        String modelSolution = "A" + Summary.ITEM_DELIMITER + "D" + Summary.ITEM_DELIMITER + "F";
 
         String solution = knapsack.solve();
 
@@ -235,6 +236,26 @@ public class ZeroOneKnapsackUnitTest {
         //System.out.println(solution);
 
         assertTrue(modelSolution.equals(solution));
+    }
+
+    @Test
+    public void solveTest2() {
+        String itemInfo1 = "Item1;1.00;1;";
+        String itemInfo2 = "Item2;2.00;2;";
+        String itemInfo3 = "Item3;1.50;1";
+
+        String modelSolution = itemInfo1 + Summary.ITEM_DELIMITER + itemInfo2;
+
+        knapsack.setBudget(5.00);
+        knapsack.addItem(itemInfo1, 1.00);
+        knapsack.addItem(itemInfo2, 2.00);
+        knapsack.addItem(itemInfo3, 1.50);
+
+        String solution = knapsack.solve();
+
+        System.out.println("Solution: " + solution);
+
+        assertTrue(solution.equals(modelSolution));
     }
 
     /**

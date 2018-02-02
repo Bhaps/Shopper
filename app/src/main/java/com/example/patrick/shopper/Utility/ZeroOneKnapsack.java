@@ -181,13 +181,12 @@ public class ZeroOneKnapsack {
 
         String summary = "";
         for (Item item : solutionItems) {
-            summary += item.getInformation() + "\n";
+            summary += item.getInformation() + Summary.ITEM_DELIMITER;
         }
 
-        //Remove the last newline character
-        //summary.replaceAll("\n$", "");
-
-        summary = summary.trim();
+        //Remove the last item delimeter as it shouldn't be there since there isn't another
+        //item following it.
+        summary.replaceAll(Summary.ITEM_DELIMITER + "$", "");
 
         return summary;
 
@@ -256,6 +255,14 @@ public class ZeroOneKnapsack {
 
     public ArrayList<Item> getItems() {
         return items;
+    }
+
+    public void setBudget(Double budget) {
+        this.budget = budget;
+    }
+
+    public Double getBudget() {
+        return budget;
     }
 
     /**

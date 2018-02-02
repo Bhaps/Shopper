@@ -12,6 +12,8 @@ import com.example.patrick.shopper.CustomViews.ItemView;
 import com.example.patrick.shopper.R;
 import com.example.patrick.shopper.Utility.Summary;
 
+import java.util.Arrays;
+
 public class MaximizedListActivity extends AppCompatActivity {
 
     private LinearLayout maximizedList;
@@ -57,20 +59,24 @@ public class MaximizedListActivity extends AppCompatActivity {
     private void displayItemViews() {
         String summarizedList = getItemSummary();
 
+        System.out.println("Retrieved item summary to be added to the list: " + summarizedList);
+
         if(summarizedList.equals("")) {
             //Do nothing
         } else {
 
             String[] items = Summary.separateSummarizedList(summarizedList);
 
+            System.out.println("Summary that was split: " + Arrays.deepToString(items));
+
             for (int itemIndex = 0; itemIndex < items.length; itemIndex++) {
                 String[] data = Summary.separateItemInformation(items[itemIndex]);
 
-                String name = data[0];
-                Double price = Double.parseDouble(data[1]);
-                int quantity = Integer.parseInt(data[2]);
+                String name = data[Summary.ITEM_NAME_INDEX];
+                Double cost = Double.parseDouble(data[Summary.ITEM_COST_INDEX]);
+                int quantity = Integer.parseInt(data[Summary.ITEM_QUANTITY_INDEX]);
 
-                ItemView item = new ItemView(context, name, price, quantity);
+                ItemView item = new ItemView(context, name, cost, quantity);
                 item.hideRemoveButton();
 
                 maximizedList.addView(item);
