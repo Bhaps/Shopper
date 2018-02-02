@@ -7,9 +7,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -35,6 +37,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     private LinearLayout itemList;
     private TextView totalCostTxtView;
     private TextView budgetTxtView;
+    private TextView messageTxtView; //Used to display a message in a dialog
     private ImageButton maximizeBtn;
 
     private double totalCost;
@@ -51,11 +54,13 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     private View itemDetailsDialogView;
     private View budgetDialogView;
     private View progressDialogView;
+    private View messageDialogView;
 
     //AlertDialog.show() are used to bring up prompts for the user to enter values
     private AlertDialog itemDetailsAlertDialog;
     private AlertDialog budgetAlertDialog;
     private AlertDialog progressAlertDialog;
+    private AlertDialog messageAlertDialog;
 
 
     private Future<String> futureCall;
@@ -223,7 +228,6 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
      * Also add any necessary listeners.
      * */
     private void initViews() {
-
         itemList = findViewById(R.id.itemListLayout);
         totalCostTxtView = findViewById(R.id.totalCostTxtView);
         budgetTxtView = findViewById(R.id.displayBudgetTxtView);
@@ -233,6 +237,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         itemDetailsDialogView = layoutInflater.inflate(R.layout.prompt_item_details, null);
         budgetDialogView = layoutInflater.inflate(R.layout.prompt_budget_view, null);
         progressDialogView = layoutInflater.inflate(R.layout.loading_view, null);
+        messageDialogView = layoutInflater.inflate(R.layout.message_view, null);
 
 
         budgetTxtView.setOnClickListener(new View.OnClickListener() {
@@ -307,6 +312,17 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         progressAlertDialogBuilder.setView(progressDialogView);
         progressAlertDialog = progressAlertDialogBuilder.create();
         progressAlertDialog.setCanceledOnTouchOutside(false);
+
+        //Create the dialog for displaying a message.
+        AlertDialog.Builder messageAlertDialogBuilder = new AlertDialog.Builder(context);
+        messageAlertDialogBuilder.setView(messageDialogView);
+        messageAlertDialogBuilder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        messageAlertDialog = messageAlertDialogBuilder.create();
     }
 
 
@@ -350,10 +366,10 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     }
 
     /**
-     * Prepares the list to be send to a second activity. Also triggers the second activity
-     * to start. //TODO change the description
+     * User has clicked the maximize shopping list button. Will check if conditions are met to
+     * begin maximizing their list (the valid budget is entered). Will then create the threads
+     * which will run the algorithm to maximize the list.
      *
-     * The items added to the list must be represented as a String.
      * @param view The button that was pressed associated with this method.
      */
     public void startMaximizingList(View view) {
@@ -362,7 +378,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
             double enteredBudget = getEnteredBudget();
 
             if(enteredBudget <= 0.0) {
-                throw new NumberFormatException("The budget can not be zero or negative.");
+                throw new NumberFormatException("The budget cannot be zero or negative.");
             }
 
             showProgressDialog();
@@ -373,16 +389,19 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
             maximizeItemsCall.addListener(this);
 
             futureCall = executorService.submit(maximizeItemsCall);
-            System.out.println("Thread started!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         } catch (NumberFormatException e){
-            //TODO show error message.
-            System.out.println("did not enter a valid budget");
-            e.printStackTrace();
+            showMessageDialog("You did not enter a valid budget.");
         }
+    }
 
-
-
-
+    /**
+     * Display a dialog which just has shows the provided message.
+     * @param message The message to be shown to the user.
+     */
+    private void showMessageDialog(String message) {
+        messageTxtView = messageDialogView.findViewById(R.id.test);
+        messageTxtView.setText(message);
+        messageAlertDialog.show();
 
     }
 
