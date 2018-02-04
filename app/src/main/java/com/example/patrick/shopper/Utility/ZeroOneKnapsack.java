@@ -209,9 +209,12 @@ public class ZeroOneKnapsack {
      * the board. When there is a tie between the situations of 'adding an item' and 'not adding
      * an item' we have two possible solutions.
      */
-    /*
+
     private void createItemNetwork() {
         Stack stack = new Stack();
+
+        //Used to keep track which positions have been visited already for a DFS
+        boolean[][] visitedBoard = new boolean[numItems][maxCapacityUnits + 1];
 
         //Start at the bottom right corner
         int itemIndex = numItems - 1; //There is the item acting as a buffer that represents
@@ -226,16 +229,9 @@ public class ZeroOneKnapsack {
         while(!stack.isEmpty()) {
             itemIndex -= 1; //
 
-            if(getValue(itemIndex, capacityIndex) != getValue(itemIndex - 1, capacityIndex)) {
-                //Item was added to the knapsack
-                stack.push(itemIndex);
-
-                capacityIndex -= items.get(itemIndex).getCostUnits();
-            }
-            itemIndex -= 1; //Move down to the next item to see if it was added
         }
 
-
+        /*
         while(itemIndex > 0 && capacityIndex > 0) {
             if(getValue(itemIndex, capacityIndex) != getValue(itemIndex - 1, capacityIndex)) {
                 //Item was added to the knapsack
@@ -245,9 +241,9 @@ public class ZeroOneKnapsack {
                 capacityIndex -= items.get(itemIndex).getCostUnits();
             }
             itemIndex -= 1; //Move down to the next item to see if it was added
-        }
+        }*/
 
-    }*/
+    }
 
     /**
      * Used in finding multiple solutions to the zero one knapsack. When reconstructing the solution
@@ -355,6 +351,14 @@ public class ZeroOneKnapsack {
 
     public Double getBudget() {
         return budget;
+    }
+
+    /**
+     * Should only be used for testing to set up a specific circumstance.
+     * @param board The new board.
+     */
+    public void setBoard(double[][] board) {
+        this.board = board;
     }
 
     /**

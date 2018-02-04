@@ -6,7 +6,11 @@ import com.example.patrick.shopper.Utility.ZeroOneKnapsack;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -277,5 +281,45 @@ public class ZeroOneKnapsackUnitTest {
         String solution = knapsack.solve();
         assertTrue(modelSolution.equals(solution));
     }
+
+    /**
+     * Test if the correct capacityIndexes van be returned.
+     */
+    @Test
+    public void calcNewIndexesTest() {
+        double[][] customBoard = new double[][]{
+                {0,0,0,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,1,1,2,2},
+                {0,0,1,1,2,2}
+        };
+        ArrayList<Integer> modelsolution = new ArrayList<>(Arrays.asList(5,2));
+
+        knapsack.setBoard(customBoard);
+
+        knapsack.setBudget(0.05); //Want maxCapacityUnits to be 5
+        knapsack.addItem("A", 0.02); //Want the costUnits to be 2
+        knapsack.addItem("B", 0.02);
+        knapsack.addItem("C", 0.03); //Want the costUnits to be 3
+
+
+        try {
+            Object[] parameters = new Object[]{3, 5};
+
+            Method m = knapsack.getClass().getDeclaredMethod("calcNewIndexes", int.class, int.class);
+            m.setAccessible(true);
+
+            ArrayList<Integer> solutions = (ArrayList<Integer>) m.invoke(knapsack, parameters);
+            assertEquals(solutions, modelsolution);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 }
