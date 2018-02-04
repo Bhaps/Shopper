@@ -1,8 +1,10 @@
 package com.example.patrick.shopper.Utility;
 
+import java.util.ArrayList;
+
 /**
- * A node that will be used to create a network of nodes. Holds information as a String and the
- * previous/next node.
+ * A node that will be used to create a network of nodes. Each Node nolds the an integer as
+ * information.
  *
  * @author Patrick Ma
  * @since 4/02/2018
@@ -10,32 +12,26 @@ package com.example.patrick.shopper.Utility;
 
 public class Node {
 
-    private String info;
-    private Node nextNode;
-    private Node prevNode;
+    private int value;
+    private ArrayList<Node> children = null;
+    private Node parent = null;
     private boolean isStart = false;
     private boolean isFinish = false;
 
-    public Node(String info, Node nextNode, Node prevNode) {
-        this.info = info;
-        this.nextNode = nextNode;
-        this.prevNode = prevNode;
+    public Node() {
+        this.children = new ArrayList<>();
     }
 
-    public Node(String info, Node nextNode) {
-        this(info, nextNode, null);
+    public void setValue(int value) {
+        this.value = value;
     }
 
-    public void setInfo(String info) {
-        this.info = info;
+    public void addChild(Node child) {
+        children.add(child);
     }
 
-    public void setNextNode(Node nextNode) {
-        this.nextNode = nextNode;
-    }
-
-    public void setPrevNode(Node prevNode) {
-        this.prevNode = prevNode;
+    public void setParent(Node parent) {
+        this.parent = parent;
     }
 
     public void setIsFinish(boolean isFinish) {
@@ -46,16 +42,16 @@ public class Node {
         this.isStart = isStart;
     }
 
-    public Node getNextNode() {
-        return nextNode;
+    public ArrayList<Node> getChildren() {
+        return children;
     }
 
-    public Node getPrevNode() {
-        return prevNode;
+    public Node getParent() {
+        return parent;
     }
 
-    public String getInfo() {
-        return info;
+    public int getValue() {
+        return value;
     }
 
     public boolean getIsFinish() {

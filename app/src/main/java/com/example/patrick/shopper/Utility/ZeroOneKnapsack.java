@@ -12,6 +12,8 @@ import java.util.Collections;
  */
 public class ZeroOneKnapsack {
 
+    public static final double MATH_TOLERANCE = 1e-9;
+
     //The different available units which determines the accuracy of the solution.
     //All values will be rounded to 1, 10 or 100 cent accuracy. The higher the accuracy the more
     //resource intensive the zero one knapsack algorithm will be.
@@ -208,15 +210,36 @@ public class ZeroOneKnapsack {
      * an item' we have two possible solutions.
      */
     /*
-    private void createNetwork() {
+    private void createItemNetwork() {
+        Stack stack = new Stack();
+
         //Start at the bottom right corner
         int itemIndex = numItems - 1; //There is the item acting as a buffer that represents
-        //the situation of no items being added yet in the algorithm. It offets the indexes by one.
+        //the situation of no items being added yet in the algorithm. It offsets the indexes by one.
+        //e.g. is numItems is 5, then were 4 added items and one 'buffer item'.
         int capacityIndex = maxCapacityUnits;
+
+
+        stack.push(new Position(itemIndex, capacityIndex));
+
+        //Keep running until we found all the solutions (happens when the stack is empty)
+        while(!stack.isEmpty()) {
+            itemIndex -= 1; //
+
+            if(getValue(itemIndex, capacityIndex) != getValue(itemIndex - 1, capacityIndex)) {
+                //Item was added to the knapsack
+                stack.push(itemIndex);
+
+                capacityIndex -= items.get(itemIndex).getCostUnits();
+            }
+            itemIndex -= 1; //Move down to the next item to see if it was added
+        }
+
 
         while(itemIndex > 0 && capacityIndex > 0) {
             if(getValue(itemIndex, capacityIndex) != getValue(itemIndex - 1, capacityIndex)) {
                 //Item was added to the knapsack
+                nextNode.setValue(itemIndex);
                 addedItemIndexes.add(itemIndex);
 
                 capacityIndex -= items.get(itemIndex).getCostUnits();
@@ -225,6 +248,43 @@ public class ZeroOneKnapsack {
         }
 
     }*/
+
+    /**
+     * Used in finding multiple solutions to the zero one knapsack. When reconstructing the solution
+     * the algorithm is 'reversed' and it is checked what items can be added to the knapsack and
+     * what is the next path to follow. Will check if situations were possible; if the specified
+     * item was not added and if the item was added. Will return the appropriate capacityIndex
+     * values for the possible situations. Do not need to return the new itemIndex as it always
+     * decreases by one, since in the zero one knapsack algorithm it always increases by one.
+     *
+     * @param  currentItemIndex The index of the item we are investigating.
+     * @param currentCapacityIndex The total capacity/cost of all the items added so far.
+     * @return Integer array of all possible capacityIndex values.
+     */
+    private ArrayList<Integer> calcNewIndexes(int currentItemIndex, int currentCapacityIndex) {
+        ArrayList<Integer> solutions = new ArrayList<>();
+        double currentValue = board[currentItemIndex][currentCapacityIndex];
+        double prevValue;
+
+        //Check if it was possible the current item was not added and we continue to have the
+        //previous set of items/capacity.
+        prevValue = board[currentItemIndex -1][currentCapacityIndex]; //Value if current item was not added
+        if(Math.abs(currentValue - prevValue) < MATH_TOLERANCE) {
+            //They are the same so it was possible the current item was not added
+            solutions.add(currentCapacityIndex);
+        }
+
+        //Check if it was possible the current item was addded.
+        int currentItemCost = items.get(currentItemIndex).getCostUnits();
+        double currentItemValue = items.get(currentItemIndex).getValue();
+        prevValue = board[currentItemIndex - 1] [currentCapacityIndex - currentItemCost] + currentItemValue;
+        if(Math.abs(currentValue - prevValue) < MATH_TOLERANCE) {
+            //They are the same, so it was possible the current item was added to the solution
+            solutions.add(currentCapacityIndex - currentItemCost);
+        }
+
+        return solutions;
+    }
 
     /**
      * Get the value for the requested item index and capacity index. If either index have gone
