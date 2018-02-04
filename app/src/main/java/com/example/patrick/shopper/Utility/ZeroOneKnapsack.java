@@ -91,13 +91,15 @@ public class ZeroOneKnapsack {
      * Starts the algorithm with the items that are in the items ArrayList.
      */
     private void startKnapsack() {
+        //Size includes the 'item' to represent the situation where no items are part of the
+        //solution. Offsets the index by +1. E.g. 4 added items results in the items.size() to be 5
         numItems = items.size();
 
         //Round down the budget, if we round up we might end up saying we have more money than
         //our budget actually is.
         maxCapacityUnits = calcUnits(budget, false);
 
-        board = new double[numItems + 1][maxCapacityUnits + 1];
+        board = new double[numItems][maxCapacityUnits + 1];
 
         for(int itemIndex = 1; itemIndex < numItems; itemIndex++) {
             int capacityIndex = 1;
@@ -183,18 +185,46 @@ public class ZeroOneKnapsack {
             summary += item.getInformation() + Summary.ITEM_DELIMITER;
         }
 
-        System.out.println("Before: " + summary);
         //Remove the last item delimeter as it shouldn't be there since there isn't another
         //item following it.
         summary = summary.replaceAll(Summary.ITEM_DELIMITER + "$", "");
-
-        System.out.println("After replace: " + summary);
 
         return summary;
 
     }
 
+    /*
+    public String solve() {
+        startKnapsack();
+        createNetwork();
 
+        return summary;
+
+    }*/
+
+    /**
+     * Create a network of items used to find all solutions when reconstructing the solution from
+     * the board. When there is a tie between the situations of 'adding an item' and 'not adding
+     * an item' we have two possible solutions.
+     */
+    /*
+    private void createNetwork() {
+        //Start at the bottom right corner
+        int itemIndex = numItems - 1; //There is the item acting as a buffer that represents
+        //the situation of no items being added yet in the algorithm. It offets the indexes by one.
+        int capacityIndex = maxCapacityUnits;
+
+        while(itemIndex > 0 && capacityIndex > 0) {
+            if(getValue(itemIndex, capacityIndex) != getValue(itemIndex - 1, capacityIndex)) {
+                //Item was added to the knapsack
+                addedItemIndexes.add(itemIndex);
+
+                capacityIndex -= items.get(itemIndex).getCostUnits();
+            }
+            itemIndex -= 1; //Move down to the next item to see if it was added
+        }
+
+    }*/
 
     /**
      * Get the value for the requested item index and capacity index. If either index have gone
