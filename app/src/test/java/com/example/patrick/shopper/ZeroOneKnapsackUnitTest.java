@@ -293,6 +293,10 @@ public class ZeroOneKnapsackUnitTest {
                 {0,0,1,1,2,2},
                 {0,0,1,1,2,2}
         };
+
+        //Both situations should be possible and need to be considered
+        // 1) The item at itemIndex 3 was not added
+        // 2) The item at itemIndex 3 was added
         ArrayList<Integer> modelsolution = new ArrayList<>(Arrays.asList(5,2));
 
         knapsack.setBoard(customBoard);
