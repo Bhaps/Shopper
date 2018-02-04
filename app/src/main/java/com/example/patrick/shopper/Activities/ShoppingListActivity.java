@@ -7,11 +7,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -23,7 +21,6 @@ import com.example.patrick.shopper.Threads.MaximizeItemsCallable;
 import com.example.patrick.shopper.Threads.ThreadCompleteListener;
 import com.example.patrick.shopper.Utility.Storage;
 import com.example.patrick.shopper.Utility.Summary;
-
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -31,6 +28,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+
+/**
+ * The main screen that is shown when the application is started. Allows the user to add and remove
+ * items into the shopping list with the item's details (name, price and quantity). The user is able
+ * to enter a budget. If the total cost of the items are greater than the budget, the user can
+ * press a button to maximize the number of items while being under budget; this maximized list is
+ * displayed in the MaximizedListActivity.
+ */
 public class ShoppingListActivity extends AppCompatActivity implements ThreadCompleteListener {
 
     //Views that need to be accessed throughout the class

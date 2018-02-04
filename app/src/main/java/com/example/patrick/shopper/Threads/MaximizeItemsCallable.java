@@ -9,9 +9,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * The Callable thread that prepares and starts the zero one knapsack algorithm to maximize the
+ * list of items.
+ *
  * Created by patrick on 19/01/18.
  */
-
 public class MaximizeItemsCallable extends NotifyingCallable {
     private double budget;
 

@@ -10,7 +10,6 @@ import java.util.concurrent.Callable;
  *
  * Created by patrick on 19/01/18.
  */
-
 public interface ThreadCompleteListener {
     void notifyOfThreadComplete(final Callable call);
 }

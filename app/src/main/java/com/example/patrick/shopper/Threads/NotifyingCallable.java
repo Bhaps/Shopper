@@ -13,7 +13,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * Created by patrick on 19/01/18.
  */
-
 public abstract class NotifyingCallable implements Callable<String> {
 
     private final Set<ThreadCompleteListener> listeners = new CopyOnWriteArraySet<ThreadCompleteListener>();

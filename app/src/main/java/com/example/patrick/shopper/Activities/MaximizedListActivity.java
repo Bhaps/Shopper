@@ -7,13 +7,15 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
-
 import com.example.patrick.shopper.CustomViews.ItemView;
 import com.example.patrick.shopper.R;
 import com.example.patrick.shopper.Utility.Summary;
-
 import java.util.Arrays;
 
+/**
+ * Activity is displayed when the user chooses to maximize their list. Will retrieve the summary of
+ * items in the final list and display them.
+ */
 public class MaximizedListActivity extends AppCompatActivity {
 
     private LinearLayout maximizedList;
@@ -39,6 +41,10 @@ public class MaximizedListActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * User has clicked the navigation arrow to return to the previous activity.
+     * @return
+     */
     @Override
     public boolean onSupportNavigateUp() {
         finish();

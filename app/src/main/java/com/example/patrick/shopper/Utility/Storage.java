@@ -1,8 +1,6 @@
 package com.example.patrick.shopper.Utility;
 
 import android.content.Context;
-import android.os.Environment;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,9 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * Store the items added to the list in a String format using the Summary abstract class.
@@ -25,7 +20,6 @@ import java.nio.file.Paths;
  *
  * Created by patrick on 30/01/18.
  */
-
 public abstract class Storage {
 
     private static final String FILENAME = "listedItems.dat";

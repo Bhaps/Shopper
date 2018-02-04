@@ -10,7 +10,6 @@ import java.util.Collections;
  *
  * Created by patrick on 14/01/18.
  */
-
 public class ZeroOneKnapsack {
 
     //The different available units which determines the accuracy of the solution.
