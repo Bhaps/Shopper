@@ -29,4 +29,14 @@ public class Position {
     public String toString() {
         return String.format("(itemIndex: %d capacityIndex: %d)", itemIndex, capacityIndex);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        Position otherPos = (Position) obj;
+        if(this.itemIndex == otherPos.itemIndex && this.capacityIndex == otherPos.capacityIndex) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

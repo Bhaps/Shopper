@@ -1,7 +1,9 @@
 package com.example.patrick.shopper.Utility;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -27,7 +29,7 @@ public class ZeroOneKnapsack {
     //solutions which have the same type and quantity of that item but different instances of them.
     // E.g. Budget 1 dollar, user added 3 lollipops each 1 dollar. Three solutions are given
     // where each solution is a lollipop
-    private Set<String> solutions = Collections.emptySet();
+    private Set<String> solutions = new HashSet<>();
 
     private ArrayList<Item> items;
     private double[][] board; //Used in the algorithm
@@ -218,11 +220,11 @@ public class ZeroOneKnapsack {
     }*/
 
     /**
-     * Create a network of items used to find all solutions when reconstructing the solution from
-     * the board. When there is a tie between the situations of 'adding an item' and 'not adding
-     * an item' we have two possible solutions.
+     * Reconstruct all the solution by traversing the board in a DFS. When there is a tie between
+     * the situations of 'adding an item' and 'not adding an item' we branch into two more possible
+     * solutions. For each branch take the stack of Positions and calculate the solution and add it
+     * to the set of solutions.
      */
-
     private void reconstructSolutions() {
         Stack stack = new Stack();
         //Used to keep track which positions have been visited already for a DFS
@@ -242,22 +244,68 @@ public class ZeroOneKnapsack {
 
         System.out.println("First next position: " + nextPosition.toString());
 
+        int loopCount = 0;
+
         //Keep running until we found all the solutions (happens when the stack is empty)
         while(!stack.isEmpty()) {
-            if(nextPosition.getItemIndex() == 0) {
-                //Next position will reach the bottom row, need to now calc the solution for this branch
-                //i.e. the positions stored in the stack
+
+            assert(loopCount < 100) : new Error("Infinite loop. Something fucked up fix it.");
+
+            //This check needs to be first otherwise the rest of the checks will fail since we can't
+            //use a method on a null object.
+            if (nextPosition == null) {
+                System.out.println("nextPosition is null");
+                //Can not keep going towards the 0th row need to go back
+                System.out.println("Previous index: " + itemIndex);
+                stack.pop();
+
+                //Peek at the top of the stack to re-position ourselves on the board. From this
+                //position we will try and see if there are any next positions we can move to
+                Position peekedPos = stack.peek();
+
+                itemIndex += 1;
+                assert (itemIndex == peekedPos.getItemIndex()) : new Error("Somethign went fucky fix it");
+                capacityIndex = peekedPos.getCapacityIndex();
+
+                System.out.println("Index after incrementing because nextPosition was null: " + itemIndex);
+                System.out.print(stack);
+                System.out.println();
+
+                nextPosition = calcNextPosition(itemIndex, capacityIndex);
+
+
+            } else if(nextPosition.getItemIndex() == 0) {
+                //Next position will reach the bottom row, add it to the stack and then need to now
+                // calc the solution for this branch as this is as far as it can go.
                 System.out.println("Reached the 0th row");
                 stack.push(nextPosition);
 
-                reconstructSolutionFromStack(stack);
+                //Have reached/moved to the bottom row now
+                itemIndex = nextPosition.getItemIndex();
+                capacityIndex = nextPosition.getCapacityIndex();
 
+                //has visited the position we are currently at
+                visitedBoard[itemIndex][capacityIndex] = true;
+
+                System.out.println("\n");
                 System.out.println(stack);
-                return;
-            } else if (nextPosition == null) {
-                System.out.println("nextPosition is null");
-                //Can not keep going towards the 0th row need to go back
-                itemIndex += 1;
+                System.out.println("\n\n");
+
+                //Have reached the bottom of this branch in the DFS, get the solution and add it
+                //to the solution set.
+                //Clone the object so it is not altered by the method
+                String solutionSummary = reconstructSolutionFromStack(stack.clone());
+                solutions.add(solutionSummary);
+
+                System.out.println("Solutions to far: " + solutions.toString());
+
+                //The next position should be null which results in us going back up the rows
+                //to explore a different branch
+                nextPosition = calcNextPosition(itemIndex, capacityIndex);
+                System.out.println("Next position next: !!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println(nextPosition);
+                assert(nextPosition == null) : new Error("The next position is not null, which means the branch has not ended.");
+
             } else {
                 System.out.println("Found an actual next position to investigate.");
                 //Has a next position to move to, add it to the stack and find the next Position
@@ -277,10 +325,12 @@ public class ZeroOneKnapsack {
 
                 //Find if there is a next position to go to.
                 nextPosition = calcNextPosition(itemIndex, capacityIndex);
-                System.out.println("Next position: " + nextPosition.toString());
+                //System.out.println("Next position: " + nextPosition.toString());
             }
 
 
+
+            loopCount += 1;
         }
 
         /*
@@ -335,7 +385,7 @@ public class ZeroOneKnapsack {
             currentCapacityIndex = nextCapacityIndex;
         }
 
-        //Retrive the corresponding items from their indexes and find the summary for the solution
+        //Retrieve the corresponding items from their indexes and find the summary for the solution
         //then add it to the set containing all solutions.
         ArrayList<Item> solutionItems = getSolutionItems(indexSolutions);
 
@@ -521,6 +571,10 @@ public class ZeroOneKnapsack {
      */
     public void setBoard(double[][] board) {
         this.board = board;
+    }
+
+    public void setVisitedBoard(boolean[][] visitedBoard) {
+        this.visitedBoard = visitedBoard;
     }
 
     /**

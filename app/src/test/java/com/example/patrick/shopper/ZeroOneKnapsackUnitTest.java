@@ -452,7 +452,7 @@ public class ZeroOneKnapsackUnitTest {
         knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
 
         try {
-            Method m = knapsack.getClass().getDeclaredMethod(reconstructSolutionsMethodName );
+            Method m = knapsack.getClass().getDeclaredMethod(reconstructSolutionsMethodName);
             m.setAccessible(true);
             m.invoke(knapsack);
 
@@ -476,6 +476,150 @@ public class ZeroOneKnapsackUnitTest {
             m.setAccessible(true);
             Position pos = (Position) m.invoke(knapsack, 0, 1);
             assertEquals(pos, null);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test if given two options for the next Position it will return a correct option.
+     */
+    @Test
+    public void calcNextPositionTest() {
+        double budget = 0.05;
+
+        double[][] customBoard = new double[][]{
+                {0,0,0,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,1,1,2,2},
+                {0,0,1,1,2,2}
+        };
+
+        //Set up such that it is as though certain positions have already been visited
+        boolean[][] customVisitedBoard = new boolean[4][6];
+        customVisitedBoard[3][5] = true;
+        customVisitedBoard[2][5] = true;
+        customVisitedBoard[1][3] = true;
+        customVisitedBoard[0][1] = true;
+        customVisitedBoard[2][2] = true;
+
+        knapsack.setVisitedBoard(customVisitedBoard);
+
+        knapsack.setBoard(customBoard);
+        knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
+        knapsack.addItem("A", 0.02); //Want the costUnits to be 2
+        knapsack.addItem("B", 0.02);
+        knapsack.addItem("C", 0.03); //Want the costUnits to be 3
+        knapsack.setNumItems(knapsack.getItems().size()); //Otherwise we get an exception thrown
+        knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
+
+        knapsack.setBoard(customBoard);
+        Position modelSolution = new Position(1,2);
+
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod("calcNextPosition", int.class, int.class);
+            m.setAccessible(true);
+            Position pos = (Position) m.invoke(knapsack, 2, 2);
+            assertEquals(pos, modelSolution);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test if given two options for the next Position but one has already been visited it will
+     * choose the only available option.
+     */
+    @Test
+    public void calcNextPositionTest2() {
+        double budget = 0.05;
+
+        double[][] customBoard = new double[][]{
+                {0,0,0,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,1,1,2,2},
+                {0,0,1,1,2,2}
+        };
+
+        //Set up such that it is as though certain positions have already been visited
+        boolean[][] customVisitedBoard = new boolean[4][6];
+        customVisitedBoard[3][5] = true;
+        customVisitedBoard[2][5] = true;
+        customVisitedBoard[1][3] = true;
+        customVisitedBoard[0][1] = true;
+
+        knapsack.setVisitedBoard(customVisitedBoard);
+
+        knapsack.setBoard(customBoard);
+        knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
+        knapsack.addItem("A", 0.02); //Want the costUnits to be 2
+        knapsack.addItem("B", 0.02);
+        knapsack.addItem("C", 0.03); //Want the costUnits to be 3
+        knapsack.setNumItems(knapsack.getItems().size()); //Otherwise we get an exception thrown
+        knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
+
+        knapsack.setBoard(customBoard);
+        Position modelSolution = new Position(2,2);
+
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod("calcNextPosition", int.class, int.class);
+            m.setAccessible(true);
+            Position pos = (Position) m.invoke(knapsack, 3, 5);
+            assertEquals(pos, modelSolution);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test if given one option for the next Position it will return it.
+     */
+    @Test
+    public void calcNextPositionTest3() {
+        double budget = 0.05;
+
+        double[][] customBoard = new double[][]{
+                {0,0,0,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,1,1,2,2},
+                {0,0,1,1,2,2}
+        };
+
+        boolean[][] customVisitedBoard = new boolean[4][6];
+
+        knapsack.setVisitedBoard(customVisitedBoard);
+
+        knapsack.setBoard(customBoard);
+        knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
+        knapsack.addItem("A", 0.02); //Want the costUnits to be 2
+        knapsack.addItem("B", 0.02);
+        knapsack.addItem("C", 0.03); //Want the costUnits to be 3
+        knapsack.setNumItems(knapsack.getItems().size()); //Otherwise we get an exception thrown
+        knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
+
+        knapsack.setBoard(customBoard);
+        Position modelSolution = new Position(1,3);
+
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod("calcNextPosition", int.class, int.class);
+            m.setAccessible(true);
+            Position pos = (Position) m.invoke(knapsack, 2, 5);
+            assertEquals(pos, modelSolution);
 
         } catch (NoSuchMethodException e) {
             e.printStackTrace();

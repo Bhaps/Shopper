@@ -1,5 +1,6 @@
 package com.example.patrick.shopper.Utility;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -15,6 +16,10 @@ public class Stack {
         stack = new ArrayList<>();
     }
 
+    public Stack(ArrayList<Position> stack) {
+        this.stack = stack;
+    }
+
     public void push(Position pos) {
         stack.add(pos);
     }
@@ -24,6 +29,11 @@ public class Stack {
         Position poppedValue = stack.get(lastIndex);
         stack.remove(lastIndex);
         return poppedValue;
+    }
+
+    public Position peek() {
+        int lastIndex = stack.size() - 1;
+        return stack.get(lastIndex);
     }
 
     public int getSize() {
@@ -42,6 +52,13 @@ public class Stack {
             s += System.getProperty("line.separator");
         }
         return s;
+    }
+
+
+    @Override
+    public Stack clone() {
+        ArrayList<Position> posCopy = (ArrayList<Position>) stack.clone();
+        return new Stack(posCopy);
     }
 
 }
