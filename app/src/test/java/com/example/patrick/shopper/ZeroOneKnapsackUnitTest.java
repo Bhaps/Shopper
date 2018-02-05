@@ -1,6 +1,7 @@
 package com.example.patrick.shopper;
 
 import com.example.patrick.shopper.Utility.Position;
+import com.example.patrick.shopper.Utility.Stack;
 import com.example.patrick.shopper.Utility.Summary;
 import com.example.patrick.shopper.Utility.ZeroOneKnapsack;
 
@@ -475,6 +476,40 @@ public class ZeroOneKnapsackUnitTest {
             m.setAccessible(true);
             Position pos = (Position) m.invoke(knapsack, 0, 1);
             assertEquals(pos, null);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test if the correct items that is part of a solution can be worked out from the Positions
+     * in a Stack. The positions represents the path done in a DFS used in reconstructing a
+     * possible solution.
+     */
+    @Test
+    public void reconstructSolutionFromStackTest() {
+        try {
+            knapsack.addItem("A", 2.00);
+            knapsack.addItem("B", 2.00);
+            knapsack.addItem("C", 3.00);
+
+            String modelSolution = "A" + Summary.ITEM_DELIMITER + "B";
+
+            Stack param = new Stack();
+            param.push(new Position(3, 5));
+            param.push(new Position(2, 5));
+            param.push(new Position(1, 3));
+            param.push(new Position(0, 1));
+
+            Method m = knapsack.getClass().getDeclaredMethod("reconstructSolutionFromStack", Stack.class);
+            m.setAccessible(true);
+            String solution = (String) m.invoke(knapsack, param);
+            assertEquals(solution, modelSolution);
 
         } catch (NoSuchMethodException e) {
             e.printStackTrace();

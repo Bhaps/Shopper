@@ -4,6 +4,8 @@ import android.widget.LinearLayout;
 
 import com.example.patrick.shopper.CustomViews.ItemView;
 
+import java.util.ArrayList;
+
 /**
  * Can not send views between activities. This abstract class will provide utility to summarize
  * all the listed items in a string format that can be sent between activities and stored in
@@ -130,6 +132,19 @@ public abstract class Summary {
         String[] itemAtrributes = itemInformation.split(INFO_DELIMITER);
         int itemQuantity = Integer.parseInt(itemAtrributes[ITEM_QUANTITY_INDEX]);
         return itemQuantity;
+    }
+
+    /**
+     * Summarize a list of Knapsack.Item objects. These items are used in the knapsack algorithm.
+     * @param items
+     * @return
+     */
+    public static String summarizeKnapsackItems(ArrayList<ZeroOneKnapsack.Item> items) {
+        String summary = "";
+        for (ZeroOneKnapsack.Item item : items) {
+            summary += item.getInformation() + Summary.ITEM_DELIMITER;
+        }
+        return summary.replaceAll(Summary.ITEM_DELIMITER + "$", "");
     }
 
 

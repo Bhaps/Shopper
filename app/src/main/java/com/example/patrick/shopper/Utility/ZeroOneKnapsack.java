@@ -2,6 +2,7 @@ package com.example.patrick.shopper.Utility;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * Executes the zero one knapsack. Takes a list of items with
@@ -22,7 +23,11 @@ public class ZeroOneKnapsack {
     public static final Double LOW_ACCURACY_UNIT = 100.0; // 1 dollar accuracy
 
     //Stores the summary to all the list of items that are solutions to the algorithm
-    private ArrayList<String> solutions = new ArrayList<>();
+    //Use it as a set in the case where the user adds 5 identical items and there are multiple
+    //solutions which have the same type and quantity of that item but different instances of them.
+    // E.g. Budget 1 dollar, user added 3 lollipops each 1 dollar. Three solutions are given
+    // where each solution is a lollipop
+    private Set<String> solutions = Collections.emptySet();
 
     private ArrayList<Item> items;
     private double[][] board; //Used in the algorithm
@@ -133,8 +138,12 @@ public class ZeroOneKnapsack {
     /**
      * Returns the indexes of the items that are part of the solution to the zero one knapsack
      * i.e. the maximized group of items that fits into the budget.
+     *
+     * Finds only one of the solutions.
+     *
      * @return ArrayList of the item's indexes from items.
      */
+    @Deprecated
     private ArrayList<Integer> getSolutionIndexes() {
         //Will contain the indexes of the items, from the array items, that are part of the solution
         ArrayList<Integer> addedItemIndexes = new ArrayList<>();
@@ -240,6 +249,9 @@ public class ZeroOneKnapsack {
                 //i.e. the positions stored in the stack
                 System.out.println("Reached the 0th row");
                 stack.push(nextPosition);
+
+                reconstructSolutionFromStack(stack);
+
                 System.out.println(stack);
                 return;
             } else if (nextPosition == null) {
@@ -282,6 +294,54 @@ public class ZeroOneKnapsack {
             }
             itemIndex -= 1; //Move down to the next item to see if it was added
         }*/
+
+    }
+
+    /**
+     * Through a DFS when reconstructing a solution, we have reached the 0th row through a path of
+     * Positions in the stack which contains a solution.
+     *
+     * Will iterate through the Positions to find all the changes in capacityIndex, this means
+     * that an item was added to the final list.
+     *
+     * @param stack Stack contains Positions which construct the path to a solution.
+     */
+    private String reconstructSolutionFromStack(Stack stack) {
+        Position nextPosition;
+        int nextCapacityIndex;
+        int nextItemIndex;
+
+        //Contains all the indexes of items that are part of the final solution
+        ArrayList<Integer> indexSolutions = new ArrayList<>();
+
+        //First position popped is the bottom position because it's in the 0th row from the board
+        Position bottomPosition = stack.pop();
+
+        int currentCapacityIndex = bottomPosition.getCapacityIndex();
+        int currentItemIndex = bottomPosition.getItemIndex();
+
+        while(!stack.isEmpty()) {
+            nextPosition = stack.pop();
+
+            nextCapacityIndex = nextPosition.getCapacityIndex();
+            nextItemIndex = nextPosition.getItemIndex();
+
+            if(nextCapacityIndex != currentCapacityIndex) {
+                //The item at nextItemIndex was added for the capacity to have changed
+                indexSolutions.add(nextItemIndex);
+            }
+
+            currentItemIndex = nextItemIndex;
+            currentCapacityIndex = nextCapacityIndex;
+        }
+
+        //Retrive the corresponding items from their indexes and find the summary for the solution
+        //then add it to the set containing all solutions.
+        ArrayList<Item> solutionItems = getSolutionItems(indexSolutions);
+
+        String solutionSummary = Summary.summarizeKnapsackItems(solutionItems);
+
+        return solutionSummary;
 
     }
 

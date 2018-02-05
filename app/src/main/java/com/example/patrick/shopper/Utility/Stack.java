@@ -36,7 +36,7 @@ public class Stack {
 
     @Override
     public String toString() {
-        String s = "";
+        String s = "Bottom of stack ->";
         for(Position pos : stack) {
             s += String.format("itemIndex: " + pos.getItemIndex() + " capacityIndex: " + pos.getCapacityIndex());
             s += System.getProperty("line.separator");
