@@ -1,10 +1,13 @@
 package com.example.patrick.shopper;
 
+import com.example.patrick.shopper.Utility.Position;
 import com.example.patrick.shopper.Utility.Summary;
 import com.example.patrick.shopper.Utility.ZeroOneKnapsack;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -23,6 +26,11 @@ public class ZeroOneKnapsackUnitTest {
     private final Double BUDGET = 5.00;
     private ZeroOneKnapsack knapsack;
     private double  DEFAULT_VALUE = 1.0;
+    private final String calcNextCapacityIndexesMethodName = "calcNextCapacityIndexes";
+    private final String reconstructSolutionsMethodName = "reconstructSolutions";
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
 
     @Before
@@ -283,10 +291,13 @@ public class ZeroOneKnapsackUnitTest {
     }
 
     /**
-     * Test if the correct capacityIndexes van be returned.
+     * Test if the correct capacityIndexes can be returned when it was possible the item was
+     * and was not added.
      */
     @Test
-    public void calcNewIndexesTest() {
+    public void calcNextCapacityIndexesTest() {
+        double budget = 0.05;
+
         double[][] customBoard = new double[][]{
                 {0,0,0,0,0,0},
                 {0,0,1,1,1,1},
@@ -299,18 +310,20 @@ public class ZeroOneKnapsackUnitTest {
         // 2) The item at itemIndex 3 was added
         ArrayList<Integer> modelsolution = new ArrayList<>(Arrays.asList(5,2));
 
-        knapsack.setBoard(customBoard);
 
-        knapsack.setBudget(0.05); //Want maxCapacityUnits to be 5
+        knapsack.setBoard(customBoard);
+        knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
         knapsack.addItem("A", 0.02); //Want the costUnits to be 2
         knapsack.addItem("B", 0.02);
         knapsack.addItem("C", 0.03); //Want the costUnits to be 3
+        knapsack.setNumItems(knapsack.getItems().size()); //Otherwise we get an exception thrown
+        knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
 
 
         try {
             Object[] parameters = new Object[]{3, 5};
 
-            Method m = knapsack.getClass().getDeclaredMethod("calcNewIndexes", int.class, int.class);
+            Method m = knapsack.getClass().getDeclaredMethod(calcNextCapacityIndexesMethodName, int.class, int.class);
             m.setAccessible(true);
 
             ArrayList<Integer> solutions = (ArrayList<Integer>) m.invoke(knapsack, parameters);
@@ -323,7 +336,153 @@ public class ZeroOneKnapsackUnitTest {
             e.printStackTrace();
         }
 
+
     }
 
+    /**
+     * Test if the correct capacityIndexes can be returned if the only possibility was the item
+     * being added.
+     */
+    @Test
+    public void calcNextCapacityIndexesTestAddedOnly() {
+        double budget = 0.05;
+        double[][] customBoard = new double[][]{
+                {0,0,0,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,1,1,2,2},
+                {0,0,1,1,2,2}
+        };
+
+        //Both situations should be possible and need to be considered
+        // 1) The item at itemIndex 3 was not added
+        // 2) The item at itemIndex 3 was added
+        ArrayList<Integer> modelsolution = new ArrayList<>(Arrays.asList(3));
+
+        knapsack.setBoard(customBoard);
+        knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
+        knapsack.addItem("A", 0.02); //Want the costUnits to be 2
+        knapsack.addItem("B", 0.02);
+        knapsack.addItem("C", 0.03); //Want the costUnits to be 3
+        knapsack.setNumItems(knapsack.getItems().size()); //Otherwise we get an exception thrown
+        knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
+
+        try {
+            Object[] parameters = new Object[]{2, 5};
+
+            Method m = knapsack.getClass().getDeclaredMethod(calcNextCapacityIndexesMethodName, int.class, int.class);
+            m.setAccessible(true);
+
+            ArrayList<Integer> solutions = (ArrayList<Integer>) m.invoke(knapsack, parameters);
+            assertEquals(solutions, modelsolution);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test if the correct capacityIndexes can be returned if the only possibility was the item
+     * not being added.
+     */
+    @Test
+    public void calcNextCapacityIndexesTestNotAddedOnly() {
+        double budget = 0.05;
+        double[][] customBoard = new double[][]{
+                {0,0,0,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,1,1,2,2},
+                {0,0,1,1,2,2}
+        };
+
+        //Both situations should be possible and need to be considered
+        // 1) The item at itemIndex 3 was not added
+        // 2) The item at itemIndex 3 was added
+        ArrayList<Integer> modelsolution = new ArrayList<>(Arrays.asList(0));
+
+        knapsack.setBoard(customBoard);
+        knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
+        knapsack.addItem("A", 0.02); //Want the costUnits to be 2
+        knapsack.addItem("B", 0.02);
+        knapsack.addItem("C", 0.03); //Want the costUnits to be 3
+        knapsack.setNumItems(knapsack.getItems().size()); //Otherwise we get an exception thrown
+        knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
+
+        try {
+            Object[] parameters = new Object[]{1, 0};
+
+            Method m = knapsack.getClass().getDeclaredMethod(calcNextCapacityIndexesMethodName, int.class, int.class);
+            m.setAccessible(true);
+
+            ArrayList<Integer> solutions = (ArrayList<Integer>) m.invoke(knapsack, parameters);
+            assertEquals(solutions, modelsolution);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test if the solutions can be reconstructed.
+     */
+    @Test
+    public void reconstructSolutionsTest() {
+        double budget = 0.05;
+        double[][] customBoard = new double[][]{
+                {0,0,0,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,1,1,2,2},
+                {0,0,1,1,2,2}
+        };
+
+        knapsack.setBoard(customBoard);
+        knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
+        knapsack.addItem("A", 0.02); //Want the costUnits to be 2
+        knapsack.addItem("B", 0.02);
+        knapsack.addItem("C", 0.03); //Want the costUnits to be 3
+        knapsack.setNumItems(knapsack.getItems().size()); //Otherwise we get an exception thrown
+        knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
+
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod(reconstructSolutionsMethodName );
+            m.setAccessible(true);
+            m.invoke(knapsack);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test if the method immediately returns null when the itemIndex (i.e. row in board) is 0.
+     * There is no next position when we have reached the 0th index.
+     */
+    @Test
+    public void calcNextPositionTestNull() {
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod("calcNextPosition", int.class, int.class);
+            m.setAccessible(true);
+            Position pos = (Position) m.invoke(knapsack, 0, 1);
+            assertEquals(pos, null);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

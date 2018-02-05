@@ -21,8 +21,12 @@ public class ZeroOneKnapsack {
     public static final Double MEDIUM_ACCURACY_UNIT = 10.0; // 10 cents accuracy
     public static final Double LOW_ACCURACY_UNIT = 100.0; // 1 dollar accuracy
 
+    //Stores the summary to all the list of items that are solutions to the algorithm
+    private ArrayList<String> solutions = new ArrayList<>();
+
     private ArrayList<Item> items;
     private double[][] board; //Used in the algorithm
+    boolean[][] visitedBoard; //Used to keep track which positions have been visited already for a DFS
     private Double budget; //The maximum weight that can be taken i.e. the budget in dollars
     public final static Double DEFAULT_VALUE = 1.0;
 
@@ -137,7 +141,7 @@ public class ZeroOneKnapsack {
 
         //Start at the bottom right corner
         int itemIndex = numItems - 1; //There is the item acting as a buffer that represents
-        //the situation of no items being added yet in the algorithm. It offets the indexes by one.
+        //the situation of no items being added yet in the algorithm. It offsets the indexes by one.
         int capacityIndex = maxCapacityUnits;
 
         while(itemIndex > 0 && capacityIndex > 0) {
@@ -210,24 +214,60 @@ public class ZeroOneKnapsack {
      * an item' we have two possible solutions.
      */
 
-    private void createItemNetwork() {
+    private void reconstructSolutions() {
         Stack stack = new Stack();
-
         //Used to keep track which positions have been visited already for a DFS
-        boolean[][] visitedBoard = new boolean[numItems][maxCapacityUnits + 1];
+        visitedBoard = new boolean[numItems][maxCapacityUnits + 1];
 
         //Start at the bottom right corner
         int itemIndex = numItems - 1; //There is the item acting as a buffer that represents
         //the situation of no items being added yet in the algorithm. It offsets the indexes by one.
         //e.g. is numItems is 5, then were 4 added items and one 'buffer item'.
         int capacityIndex = maxCapacityUnits;
+        System.out.println("Starting itemIndex: " + itemIndex);
+        System.out.println("Starting capacityIndex: " + capacityIndex);
 
-
+        //Set up the starting Position in the stack
         stack.push(new Position(itemIndex, capacityIndex));
+        Position nextPosition = calcNextPosition(itemIndex, capacityIndex);
+
+        System.out.println("First next position: " + nextPosition.toString());
 
         //Keep running until we found all the solutions (happens when the stack is empty)
         while(!stack.isEmpty()) {
-            itemIndex -= 1; //
+            if(nextPosition.getItemIndex() == 0) {
+                //Next position will reach the bottom row, need to now calc the solution for this branch
+                //i.e. the positions stored in the stack
+                System.out.println("Reached the 0th row");
+                stack.push(nextPosition);
+                System.out.println(stack);
+                return;
+            } else if (nextPosition == null) {
+                System.out.println("nextPosition is null");
+                //Can not keep going towards the 0th row need to go back
+                itemIndex += 1;
+            } else {
+                System.out.println("Found an actual next position to investigate.");
+                //Has a next position to move to, add it to the stack and find the next Position
+                //it could move to in the DFS to reconstruct a solution (out of multiple solutions)
+                stack.push(nextPosition);
+
+                //Move to the position
+                itemIndex -= 1;
+                assert (itemIndex == nextPosition.getItemIndex()) :
+                        "The next position is not the next row above.";
+                capacityIndex = nextPosition.getCapacityIndex();
+
+                //has visited the position we are currently at
+                visitedBoard[itemIndex][capacityIndex] = true;
+
+                System.out.println("currentItemIndex: " + itemIndex + " | currentCapacityIndex: " + capacityIndex);
+
+                //Find if there is a next position to go to.
+                nextPosition = calcNextPosition(itemIndex, capacityIndex);
+                System.out.println("Next position: " + nextPosition.toString());
+            }
+
 
         }
 
@@ -246,6 +286,56 @@ public class ZeroOneKnapsack {
     }
 
     /**
+     * Gives the next position in the board used in the zero one knapsack when reconstructing
+     * the solution. Moves in the direction from the bottom right corner (last item added) to the
+     * first row (no items added).
+     * @param currentItemIndex The index of the current item we are investigating.
+     * @param currentCapacityIndex The current capacity.
+     * @return Returns a Position object to represent the next position on the board variable to go
+     * to when doing a DFS. Returns null when there are no further positions to go to.
+     */
+    private Position calcNextPosition(int currentItemIndex, int currentCapacityIndex) {
+
+        if(currentItemIndex == 0) {
+            //Has reached the 0th row to represent no items being added, can not have a next position
+            //return null and end early.
+            return null;
+        }
+
+        ArrayList<Integer> possibleCapacityIndexes = calcNextCapacityIndexes(currentItemIndex, currentCapacityIndex);
+
+        System.out.println("Possible capacity indexes: " + possibleCapacityIndexes);
+
+        Position nextPosition = null;
+
+        int nextItemIndex = currentItemIndex - 1;
+
+        for(int nextCapacityIndex : possibleCapacityIndexes) {
+            if(!isPositionVisited(nextItemIndex, nextCapacityIndex)) {
+                //Found a valid position in continuing this branch in the DFS. End the loop early.
+                return new Position(nextItemIndex, nextCapacityIndex);
+            }
+        }
+        return nextPosition;
+    }
+
+    /**
+     * Check the specified position on the board has not been yet when reconstructing the
+     * solution(s).
+     *
+     * @param itemIndex The index for the board's row.
+     * @param capacityIndex The index for the board's column.
+     * @return
+     */
+    private boolean isPositionVisited(int itemIndex, int capacityIndex) {
+        if(visitedBoard[itemIndex][capacityIndex] == false) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
      * Used in finding multiple solutions to the zero one knapsack. When reconstructing the solution
      * the algorithm is 'reversed' and it is checked what items can be added to the knapsack and
      * what is the next path to follow. Will check if situations were possible; if the specified
@@ -255,16 +345,16 @@ public class ZeroOneKnapsack {
      *
      * @param  currentItemIndex The index of the item we are investigating.
      * @param currentCapacityIndex The total capacity/cost of all the items added so far.
-     * @return Integer array of all possible capacityIndex values.
+     * @return Integer array of all possible capacityIndex values for the next position we can investigate in the (currentItemIndex - 1)th row.
      */
-    private ArrayList<Integer> calcNewIndexes(int currentItemIndex, int currentCapacityIndex) {
+    private ArrayList<Integer> calcNextCapacityIndexes(int currentItemIndex, int currentCapacityIndex) {
         ArrayList<Integer> solutions = new ArrayList<>();
-        double currentValue = board[currentItemIndex][currentCapacityIndex];
+        double currentValue = getValue(currentItemIndex, currentCapacityIndex);
         double prevValue;
 
         //Check if it was possible the current item was not added and we continue to have the
         //previous set of items/capacity.
-        prevValue = board[currentItemIndex -1][currentCapacityIndex]; //Value if current item was not added
+        prevValue = getValue(currentItemIndex -1,currentCapacityIndex); //Value if current item was not added
         if(Math.abs(currentValue - prevValue) < MATH_TOLERANCE) {
             //They are the same so it was possible the current item was not added
             solutions.add(currentCapacityIndex);
@@ -273,7 +363,7 @@ public class ZeroOneKnapsack {
         //Check if it was possible the current item was addded.
         int currentItemCost = items.get(currentItemIndex).getCostUnits();
         double currentItemValue = items.get(currentItemIndex).getValue();
-        prevValue = board[currentItemIndex - 1] [currentCapacityIndex - currentItemCost] + currentItemValue;
+        prevValue = getValue(currentItemIndex - 1,currentCapacityIndex - currentItemCost) + currentItemValue;
         if(Math.abs(currentValue - prevValue) < MATH_TOLERANCE) {
             //They are the same, so it was possible the current item was added to the solution
             solutions.add(currentCapacityIndex - currentItemCost);
@@ -290,10 +380,14 @@ public class ZeroOneKnapsack {
      * @return
      */
     private double getValue(int itemIndex, int capacityIndex) {
+        String newLine = System.getProperty("line.separator");
+
         //itemIndex >= numItems because there is the item that acts as a buffer to represent
         //the case of having no items, offsets the indexes by one.
         if(itemIndex >= numItems || capacityIndex > maxCapacityUnits ) {
-            throw new java.lang.Error("The index(es) are out of bounds.");
+            throw new java.lang.Error("The index(es) are out of bounds." + newLine +
+                    "itemIndex: " + itemIndex + " | numItems: " + numItems + newLine +
+            "capacityIndex: " + capacityIndex + " | maxCapacityIndex: " + maxCapacityUnits);
         }
 
         if(itemIndex < 0 || capacityIndex < 0) {
@@ -353,6 +447,14 @@ public class ZeroOneKnapsack {
         return budget;
     }
 
+    public void setNumItems(int numItems) {
+        this.numItems = numItems;
+    }
+
+    public void setMaxCapacityUnits(int maxCapacityUnits) {
+        this.maxCapacityUnits = maxCapacityUnits;
+    }
+
     /**
      * Should only be used for testing to set up a specific circumstance.
      * @param board The new board.
@@ -394,6 +496,7 @@ public class ZeroOneKnapsack {
         public void setCostUnits(int costUnits) {
             this.costUnits = costUnits;
         }
+
 
         public int getCostUnits() {
             return costUnits;

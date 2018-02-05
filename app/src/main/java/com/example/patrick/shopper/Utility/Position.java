@@ -21,4 +21,12 @@ public class Position {
         return itemIndex;
     }
 
+    public int getCapacityIndex() {
+        return capacityIndex;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("(itemIndex: %d capacityIndex: %d)", itemIndex, capacityIndex);
+    }
 }

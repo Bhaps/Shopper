@@ -34,4 +34,14 @@ public class Stack {
         return stack.size() == 0;
     }
 
+    @Override
+    public String toString() {
+        String s = "";
+        for(Position pos : stack) {
+            s += String.format("itemIndex: " + pos.getItemIndex() + " capacityIndex: " + pos.getCapacityIndex());
+            s += System.getProperty("line.separator");
+        }
+        return s;
+    }
+
 }
