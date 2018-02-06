@@ -1,8 +1,11 @@
 package com.example.patrick.shopper.Utility;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -211,7 +214,7 @@ public class ZeroOneKnapsack {
     }
 
     /*
-    public String solve() {
+    public String solve() {new Position(1,0),
         startKnapsack();
         createNetwork();
 
@@ -220,12 +223,33 @@ public class ZeroOneKnapsack {
     }*/
 
     /**
-     * Reconstruct all the solution by traversing the board in a DFS. When there is a tie between
-     * the situations of 'adding an item' and 'not adding an item' we branch into two more possible
-     * solutions. For each branch take the stack of Positions and calculate the solution and add it
-     * to the set of solutions.
+     * Reconstruct all the solution by traversing the board.
+     *
+     * First will mark all positions in the board that are part of any solution.
+     *
+     * Next will use dynamic programming to save the solution set of Positions starting at each
+     * visited point.
+     *
+     * When there is a tie between the situations of 'adding an item' and 'not adding an item' we
+     * know that we have multiple solutions.
+     *
+     * At the end, the bottom right position will have all the sets of Positions that can give a
+     * solution. Calculate the final list(s) and remove the duplicates.
      */
     private void reconstructSolutions() {
+        ArrayList<Position> visitedPositions = markSolutionPositions();
+
+
+    }
+
+    /**
+     * Mark all positions that are part of any solution's reconstruction.
+     *
+     * @return Array of Positions that are part of any solution sorted in order. First by itemIndex
+     * and then by capacityIndex.
+     */
+    private ArrayList<Position> markSolutionPositions() {
+        ArrayList<Position> visitedPositions = new ArrayList<>();
         Stack stack = new Stack();
         //Used to keep track which positions have been visited already for a DFS
         visitedBoard = new boolean[numItems][maxCapacityUnits + 1];
@@ -240,20 +264,24 @@ public class ZeroOneKnapsack {
 
         //Set up the starting Position in the stack
         stack.push(new Position(itemIndex, capacityIndex));
+        visitedPositions.add(new Position(itemIndex, capacityIndex));
+        visitedBoard[itemIndex][capacityIndex] = true;
         Position nextPosition = calcNextPosition(itemIndex, capacityIndex);
 
         System.out.println("First next position: " + nextPosition.toString());
 
-        int loopCount = 0;
-
-        //Keep running until we found all the solutions (happens when the stack is empty)
+        //Mark all the visited positions using DFS.
         while(!stack.isEmpty()) {
-
-            assert(loopCount < 100) : new Error("Infinite loop. Something fucked up fix it.");
-
             //This check needs to be first otherwise the rest of the checks will fail since we can't
             //use a method on a null object.
-            if (nextPosition == null) {
+            if(nextPosition == null && stack.getSize() == 1) {
+                //The stack only has the original position left in the stack and all
+                stack.pop();
+
+                visitedPositions = sortPositionArray(visitedPositions);
+                return visitedPositions;
+                //positions have been visited.
+            } else if (nextPosition == null) {
                 System.out.println("nextPosition is null");
                 //Can not keep going towards the 0th row need to go back
                 System.out.println("Previous index: " + itemIndex);
@@ -275,8 +303,7 @@ public class ZeroOneKnapsack {
 
 
             } else if(nextPosition.getItemIndex() == 0) {
-                //Next position will reach the bottom row, add it to the stack and then need to now
-                // calc the solution for this branch as this is as far as it can go.
+                //Next position will reach the bottom row, add it to the stack
                 System.out.println("Reached the 0th row");
                 stack.push(nextPosition);
 
@@ -286,16 +313,11 @@ public class ZeroOneKnapsack {
 
                 //has visited the position we are currently at
                 visitedBoard[itemIndex][capacityIndex] = true;
+                visitedPositions.add(new Position(itemIndex, capacityIndex));
 
                 System.out.println("\n");
                 System.out.println(stack);
                 System.out.println("\n\n");
-
-                //Have reached the bottom of this branch in the DFS, get the solution and add it
-                //to the solution set.
-                //Clone the object so it is not altered by the method
-                String solutionSummary = reconstructSolutionFromStack(stack.clone());
-                solutions.add(solutionSummary);
 
                 System.out.println("Solutions to far: " + solutions.toString());
 
@@ -309,7 +331,7 @@ public class ZeroOneKnapsack {
             } else {
                 System.out.println("Found an actual next position to investigate.");
                 //Has a next position to move to, add it to the stack and find the next Position
-                //it could move to in the DFS to reconstruct a solution (out of multiple solutions)
+                //it could move to in the DFS
                 stack.push(nextPosition);
 
                 //Move to the position
@@ -320,6 +342,7 @@ public class ZeroOneKnapsack {
 
                 //has visited the position we are currently at
                 visitedBoard[itemIndex][capacityIndex] = true;
+                visitedPositions.add(new Position(itemIndex, capacityIndex));
 
                 System.out.println("currentItemIndex: " + itemIndex + " | currentCapacityIndex: " + capacityIndex);
 
@@ -327,10 +350,6 @@ public class ZeroOneKnapsack {
                 nextPosition = calcNextPosition(itemIndex, capacityIndex);
                 //System.out.println("Next position: " + nextPosition.toString());
             }
-
-
-
-            loopCount += 1;
         }
 
         /*
@@ -345,7 +364,38 @@ public class ZeroOneKnapsack {
             itemIndex -= 1; //Move down to the next item to see if it was added
         }*/
 
+
+
+        visitedPositions = sortPositionArray(visitedPositions);
+        return visitedPositions;
     }
+
+    /**
+     * Sorted an ArrayList of positions in increasing order. First by the itemIndex and then by
+     * the capacityIndex.
+     *
+     * @param posArray Array to sort.
+     * @return Sorted array.
+     */
+    private ArrayList<Position> sortPositionArray(ArrayList<Position> posArray) {
+        Collections.sort(posArray, new Comparator<Position>() {
+            @Override
+            public int compare(Position pos1, Position pos2) {
+                int itemIndexComparison = pos1.getItemIndex() - pos2.getItemIndex();
+                if(itemIndexComparison != 0) {
+                    //Not equal can just return value
+                    return itemIndexComparison;
+                } else {
+                    //itemIndex tied, need to do further comparisons
+                    int capacityIndexComparison = pos1.getCapacityIndex() - pos2.getCapacityIndex();
+                    return capacityIndexComparison;
+                }
+            }
+        });
+        return posArray;
+    }
+
+
 
     /**
      * Through a DFS when reconstructing a solution, we have reached the 0th row through a path of
@@ -357,10 +407,6 @@ public class ZeroOneKnapsack {
      * @param stack Stack contains Positions which construct the path to a solution.
      */
     private String reconstructSolutionFromStack(Stack stack) {
-
-            :(
-
-
         Position nextPosition;
         int nextCapacityIndex;
         int nextItemIndex;
@@ -584,6 +630,10 @@ public class ZeroOneKnapsack {
 
     public void setVisitedBoard(boolean[][] visitedBoard) {
         this.visitedBoard = visitedBoard;
+    }
+
+    public boolean[][] getVisitedBoard() {
+        return visitedBoard;
     }
 
     /**
