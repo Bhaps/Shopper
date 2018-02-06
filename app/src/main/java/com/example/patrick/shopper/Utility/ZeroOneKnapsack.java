@@ -357,6 +357,10 @@ public class ZeroOneKnapsack {
      * @param stack Stack contains Positions which construct the path to a solution.
      */
     private String reconstructSolutionFromStack(Stack stack) {
+
+            :(
+
+
         Position nextPosition;
         int nextCapacityIndex;
         int nextItemIndex;
@@ -422,6 +426,7 @@ public class ZeroOneKnapsack {
 
         for(int nextCapacityIndex : possibleCapacityIndexes) {
             if(!isPositionVisited(nextItemIndex, nextCapacityIndex)) {
+                System.out.println("Chosen for the nextItemIndex, nextCapacityIndex: " + nextItemIndex + ", " + nextCapacityIndex);
                 //Found a valid position in continuing this branch in the DFS. End the loop early.
                 return new Position(nextItemIndex, nextCapacityIndex);
             }
@@ -565,6 +570,10 @@ public class ZeroOneKnapsack {
         this.maxCapacityUnits = maxCapacityUnits;
     }
 
+    public Set<String> getSolutions() {
+        return solutions;
+    }
+
     /**
      * Should only be used for testing to set up a specific circumstance.
      * @param board The new board.
@@ -627,8 +636,6 @@ public class ZeroOneKnapsack {
         public String getInformation() {
             return information;
         }
-
-
 
         @Override
         public String toString() {

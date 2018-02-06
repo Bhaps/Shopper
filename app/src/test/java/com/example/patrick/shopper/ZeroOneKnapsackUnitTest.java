@@ -15,6 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -436,12 +438,22 @@ public class ZeroOneKnapsackUnitTest {
     @Test
     public void reconstructSolutionsTest() {
         double budget = 0.05;
+        Set solution = null;
         double[][] customBoard = new double[][]{
                 {0,0,0,0,0,0},
                 {0,0,1,1,1,1},
                 {0,0,1,1,2,2},
                 {0,0,1,1,2,2}
         };
+
+        String itemAInfo = "A";
+        String itemBInfo = "B";
+        String itemCInfo = "C";
+
+        Set<String> modelSolutions = new HashSet<>();
+        modelSolutions.add(itemAInfo + Summary.ITEM_DELIMITER + itemBInfo);
+        modelSolutions.add(itemAInfo + Summary.ITEM_DELIMITER + itemCInfo);
+        modelSolutions.add(itemBInfo + Summary.ITEM_DELIMITER + itemCInfo);
 
         knapsack.setBoard(customBoard);
         knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
@@ -455,6 +467,8 @@ public class ZeroOneKnapsackUnitTest {
             Method m = knapsack.getClass().getDeclaredMethod(reconstructSolutionsMethodName);
             m.setAccessible(true);
             m.invoke(knapsack);
+            solution = knapsack.getSolutions();
+
 
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
@@ -463,6 +477,7 @@ public class ZeroOneKnapsackUnitTest {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
+        assertEquals(solution, modelSolutions);
     }
 
     /**
