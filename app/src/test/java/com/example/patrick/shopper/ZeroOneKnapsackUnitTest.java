@@ -1,5 +1,7 @@
 package com.example.patrick.shopper;
 
+import android.text.style.AbsoluteSizeSpan;
+
 import com.example.patrick.shopper.Utility.Position;
 import com.example.patrick.shopper.Utility.Stack;
 import com.example.patrick.shopper.Utility.Summary;
@@ -53,6 +55,7 @@ public class ZeroOneKnapsackUnitTest {
         assertEquals(0, knapsack.calcUnits(amount, true));
         assertEquals(0, knapsack.calcUnits(amount, false));
     }
+
 
     /**
      * Test the boundary if we get the expected result when we enter a budget of 0.
@@ -447,7 +450,7 @@ public class ZeroOneKnapsackUnitTest {
     @Test
     public void reconstructSolutionsTest() {
         double budget = 0.05;
-        Set solution = null;
+        ArrayList<String> solution = null;
         double[][] customBoard = new double[][]{
                 {0,0,0,0,0,0},
                 {0,0,1,1,1,1},
@@ -459,7 +462,7 @@ public class ZeroOneKnapsackUnitTest {
         String itemBInfo = "B";
         String itemCInfo = "C";
 
-        Set<String> modelSolutions = new HashSet<>();
+        ArrayList<String> modelSolutions = new ArrayList<>();
         modelSolutions.add(itemAInfo + Summary.ITEM_DELIMITER + itemBInfo);
         modelSolutions.add(itemAInfo + Summary.ITEM_DELIMITER + itemCInfo);
         modelSolutions.add(itemBInfo + Summary.ITEM_DELIMITER + itemCInfo);
@@ -475,9 +478,9 @@ public class ZeroOneKnapsackUnitTest {
         try {
             Method m = knapsack.getClass().getDeclaredMethod(reconstructSolutionsMethodName);
             m.setAccessible(true);
-            m.invoke(knapsack);
-            solution = knapsack.getSolutions();
+            ArrayList<String> retrievedSolutions = (ArrayList<String>) m.invoke(knapsack);
 
+            assertTrue(retrievedSolutions.equals(modelSolutions));
 
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
@@ -489,7 +492,6 @@ public class ZeroOneKnapsackUnitTest {
             e.printStackTrace();
             fail();
         }
-        assertEquals(solution, modelSolutions);
     }
 
     /**
@@ -937,6 +939,101 @@ public class ZeroOneKnapsackUnitTest {
             e.printStackTrace();
             fail();
         }
+    }
+
+    /**
+     * Test if the index of items that are part of a solution can be correctly extracted.
+     */
+    @Test
+    public void retrieveItemIndexesInSolutionTest() {
+        ArrayList<Position> param = new ArrayList<>(Arrays.asList(new Position(2, 5),
+                new Position(3, 5), new Position(1, 3), new Position(0, 1)));
+
+        ArrayList<Integer> modelSolution = new ArrayList<>(Arrays.asList(1,2));
+
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod("retrieveItemIndexesInSolution", ArrayList.class);
+            m.setAccessible(true);
+            ArrayList<Integer> indexSolutions = (ArrayList<Integer>) m.invoke(knapsack, param);
+
+            //System.out.println(indexSolutions);
+            //System.out.println(modelSolution);
+
+            assertTrue(indexSolutions.equals(modelSolution));
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            fail();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            fail();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+    }
+
+    /**
+     * Test if the index of items that are part of a solution can be correctly extracted.
+     */
+    @Test
+    public void retrieveItemIndexesInSolutionTest2() {
+        ArrayList<Position> param = new ArrayList<>(Arrays.asList(new Position(5, 5),
+                new Position(4, 5), new Position(3, 4), new Position(2, 4),
+                new Position(1,2), new Position(0, 0)));
+
+        ArrayList<Integer> modelSolution = new ArrayList<>(Arrays.asList(1,2, 4));
+
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod("retrieveItemIndexesInSolution", ArrayList.class);
+            m.setAccessible(true);
+            ArrayList<Integer> indexSolutions = (ArrayList<Integer>) m.invoke(knapsack, param);
+
+            assertTrue(indexSolutions.equals(modelSolution));
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            fail();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            fail();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+    }
+
+    /**
+     * Test if the index of items that are part of a solution can be correctly extracted. Should
+     * return an empty list if the provided positions don't give any items for a solution.
+     */
+    @Test
+    public void retrieveItemIndexesInSolutionTestNone() {
+        ArrayList<Position> param = new ArrayList<>(Arrays.asList(new Position(0,0),
+                new Position(1,0), new Position(2,0), new Position(3,0)));
+
+        ArrayList<Integer> modelSolution = new ArrayList<>();
+
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod("retrieveItemIndexesInSolution", ArrayList.class);
+            m.setAccessible(true);
+            ArrayList<Integer> indexSolutions = (ArrayList<Integer>) m.invoke(knapsack, param);
+
+            assertTrue(indexSolutions.equals(modelSolution));
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            fail();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            fail();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            fail();
+        }
+
     }
 
 }

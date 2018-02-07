@@ -20,6 +20,7 @@ public abstract class Summary {
 
     public static String INFO_DELIMITER = ";"; //Separates name, price and quantity attributes
     public static String ITEM_DELIMITER = "#";
+    public static String LIST_DELIMITER = "~";
 
     public static final int ITEM_NAME_INDEX = 0;
     public static final int ITEM_COST_INDEX = 1;

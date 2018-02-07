@@ -1,12 +1,12 @@
 package com.example.patrick.shopper.Utility;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLOutput;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -173,10 +173,11 @@ public class ZeroOneKnapsack {
 
     /**
      * Take an array of indexes and return the items they correspond to.
+     *
      * @param indexes The indexes from the elements in the ArrayList items.
-     * @return An ArrayList of the items that are the solution to the knapsack.
+     * @return An ArrayList of the items that matches to the provided indexes.
      */
-    private ArrayList<Item> getSolutionItems(ArrayList<Integer> indexes) {
+    private ArrayList<Item> getItemsFromItemIndexes(ArrayList<Integer> indexes) {
         ArrayList<Item> solution = new ArrayList<>();
 
         for(int index : indexes) {
@@ -194,7 +195,7 @@ public class ZeroOneKnapsack {
         startKnapsack();
 
         ArrayList<Integer> solutionIndexes = getSolutionIndexes();
-        ArrayList<Item> solutionItems = getSolutionItems(solutionIndexes);
+        ArrayList<Item> solutionItems = getItemsFromItemIndexes(solutionIndexes);
 
         //Retrieving the solution works backwards starting from the last item added
         //reverse the list so it is in the same order as the items are originally added.
@@ -236,20 +237,187 @@ public class ZeroOneKnapsack {
      * At the end, the bottom right position will have all the sets of Positions that can give a
      * solution. Calculate the final list(s) and remove the duplicates.
      */
-    private void reconstructSolutions() {
+    private ArrayList<String> reconstructSolutions() {
+        //When a 'next' Position or object or index is mentioned. It is related to the next ___
+        //we get if we were to continue the pattern of reconstructing the solution.
+
         ArrayList<Position> visitedPositions = markSolutionPositions();
 
         //Using dynamic problem, at each cell in the board below store all the visited Position
         //objects needed to reconstruct the solution starting from that area.
-        ArrayList<ArrayList<Set<ArrayList<Position>>>> board = new ArrayList<>();
+        ArrayList<ArrayList<Set<ArrayList<Position>>>> solutionBoard = new ArrayList<>();
         for(int rowIndex = 0; rowIndex < numItems; rowIndex++) {
-            board.add(new ArrayList<Set<ArrayList<Position>>>());
+            solutionBoard.add(new ArrayList<Set<ArrayList<Position>>>());
             for(int columnIndex = 0; columnIndex < maxCapacityUnits + 1; columnIndex++) {
-                board.get(rowIndex).add(new HashSet<ArrayList<Position>>());
+                solutionBoard.get(rowIndex).add(new HashSet<ArrayList<Position>>());
             }
         }
 
+        //For each visited position find the all the Positions involved in reconstructing the
+        //solution at that point. Save them in the corresponding cell in the solutionBoard
+        for(Position visitedPos : visitedPositions) {
 
+            int posItemIndex = visitedPos.getItemIndex();
+            int posCapacityIndex = visitedPos.getCapacityIndex();
+
+            ArrayList<Integer> nextCapacityIndexes = calcNextCapacityIndexes(posItemIndex, posCapacityIndex);
+            //If the size is 0 then there are no next positions to go to.
+            //If the size is 1 then there is only one next position to go to, hence same amount of solutions.
+            //If the size is 2 then there are 2 positions to go to next, hence adds more solutions.
+            int numIndexes = nextCapacityIndexes.size();
+
+            if(numIndexes == 0) {
+                //No next position to go to during reconstructing the solution. This means we are
+                //at the 0th row in the board variable. The Set<ArrayList<Position>> at the
+                //corresponding row and column in the solutionBoard do not have any
+                //ArrayList<Position> yet. Need to create a new one with the current indexes
+                //in a Position object. So far only this Position is part of the reconstruction of
+                //a solution.
+                Set setOfPositionArraysForSolutions = solutionBoard.get(posItemIndex).get(posCapacityIndex);
+
+                //Will contain all the Positions that were included in the reconstruction of a
+                //single solution.
+                ArrayList<Position> positionArrayForSolution = new ArrayList<Position>(Arrays.asList(new Position(posItemIndex, posCapacityIndex)));
+                setOfPositionArraysForSolutions.add(positionArrayForSolution);
+
+            } else {
+                //There is one or two Position we could go to next from the current visitedPos
+                //For each next Position, retrieve all the arrays of Position objects and add the
+                //current position to each of them. Save set of all these arrays at the
+                //corresponding cell in solutionBoard. This represents all the partial solutions
+                //that you can get from the current visitedPos.
+
+                int nextItemIndex = posItemIndex - 1;
+                Set currentSetOfPositionArraysForSolutions = solutionBoard.get(posItemIndex).get(posCapacityIndex);
+                Position currentPosition = new Position(posItemIndex, posCapacityIndex);
+
+                for(int nextCapacityIndex : nextCapacityIndexes) {
+
+                    Set nextSetOfPositionArraysForSolutions = solutionBoard.get(nextItemIndex).get(nextCapacityIndex);
+
+                    for (Iterator<ArrayList<Position>> iterator = nextSetOfPositionArraysForSolutions.iterator(); iterator.hasNext(); ) {
+                        ArrayList<Position> nextArrayOfPositionsForSolution = iterator.next();
+
+                        //Add on the current position to the array of Position from the next array,
+                        //as it's also part of the solution reconstruction starting from this position
+                        ArrayList<Position> currentArrayOfPositionsForSolution = (ArrayList<Position>) nextArrayOfPositionsForSolution.clone();
+                        currentArrayOfPositionsForSolution.add(currentPosition);
+
+                        currentSetOfPositionArraysForSolutions.add(currentArrayOfPositionsForSolution);
+                    }
+                }
+
+            }
+
+            System.out.println();
+            System.out.println();
+        }
+
+        //Take set of all arrays of Positions at the bottom right corner in the solutionBoard.
+        //Each array represents a reconstruction for a single solution. Calculate the final lists
+        //and summarize them all.
+        int lastRowIndex = numItems - 1;
+        int lastColumnIndex = maxCapacityUnits;
+        Position currentPosition = new Position(lastRowIndex, lastColumnIndex);
+
+        Set setOfPositionArraysForFinalSolutions = solutionBoard.get(lastRowIndex).get(lastColumnIndex);
+
+        ArrayList<Integer> nextCapacityIndexes = calcNextCapacityIndexes(lastRowIndex, lastColumnIndex);
+
+        for(int nextCapacityIndex : nextCapacityIndexes) {
+            int nextItemIndex = lastRowIndex - 1;
+
+            Set nextSetOfPositionArraysForSolutions = solutionBoard.get(nextItemIndex).get(nextCapacityIndex);
+
+            for (Iterator<ArrayList<Position>> iterator = nextSetOfPositionArraysForSolutions.iterator(); iterator.hasNext(); ) {
+                ArrayList<Position> nextArrayOfPositionsForSolution = iterator.next();
+
+                //Add on the current position to the array of Position from the next array,
+                //as it's also part of the solution reconstruction starting from this position
+                ArrayList<Position> currentArrayOfPositionsForSolution = (ArrayList<Position>) nextArrayOfPositionsForSolution.clone();
+                currentArrayOfPositionsForSolution.add(currentPosition);
+
+                setOfPositionArraysForFinalSolutions.add(currentArrayOfPositionsForSolution);
+            }
+        }
+
+        //Store all the list summaries in this array
+        ArrayList<String> solutionSummaries = new ArrayList<>();
+
+        //Set used to remove duplicate solutions
+        Set<String> setSolutionSummaries = new HashSet<>();
+
+        for(Iterator<ArrayList<Position>> iterator = setOfPositionArraysForFinalSolutions.iterator(); iterator.hasNext(); ) {
+            ArrayList<Position> positions = iterator.next();
+            ArrayList<Integer> itemIndexes = null;
+
+            try {
+                //Store the indexes of all the items included in the final solution
+                itemIndexes = retrieveItemIndexesInSolution(positions);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            ArrayList<Item> maximizedItems = getItemsFromItemIndexes(itemIndexes);
+            String summarizedMaximizedList = Summary.summarizeKnapsackItems(maximizedItems);
+            setSolutionSummaries.add(summarizedMaximizedList);
+        }
+
+        String[] tempArrayToBeConverted =  setSolutionSummaries.toArray(new String[setSolutionSummaries.size()]);
+        solutionSummaries = new ArrayList<>(Arrays.asList(tempArrayToBeConverted));
+
+        return solutionSummaries;
+    }
+
+    /**
+     * Go through the array of positions and extract all the indexes for items that are part of the
+     * solution.
+     *
+     * A Position has an itemIndex property.
+     *
+     * @param positions All the Position that were included in a list's reconstruction.
+     * @return Array of indexes for items that are included in the maximized list's solution.
+     */
+    private ArrayList<Integer> retrieveItemIndexesInSolution(ArrayList<Position> positions) throws Exception {
+        //If an item as been added then that means the capacity will change.
+
+        ArrayList<Integer> indexSolutions = new ArrayList<>();
+        //Start at the Position in the 0th row to represent the situation of not having added
+        //any items yet. Any change from this Position's capacity means that the first item has
+        //been added.
+        int firstPositionItemIndex = 0;
+        int numPositions = positions.size();
+        int nextItemIndex;
+        int nextCapacityIndex;
+
+        if(numPositions == 0) {
+            throw new Exception("An invalid argument was provided, the array needs to have Position elements in it.");
+        }
+
+
+        //Sort it in order such that the itemIndexes are in increasing order, now any change
+        //in capacity (i.e. capacityIndexes) logically means that an item has been added
+        positions = sortPositionArray(positions);
+
+        int currentCapacityIndex = positions.get(firstPositionItemIndex).getCapacityIndex();
+
+        for(int i = 1; i < numPositions; i++) {
+            nextItemIndex = positions.get(i).getItemIndex();
+            nextCapacityIndex = positions.get(i).getCapacityIndex();
+
+            //The capacity will change, hence the item at nextItemIndex is aded.
+            if(currentCapacityIndex != nextCapacityIndex) {
+                assert (currentCapacityIndex < nextCapacityIndex) : new Error("somethign went wrong, Position array possibly not sorted properly.");
+
+                //The capacity has increased, therefore the current item has been added
+                indexSolutions.add(nextItemIndex);
+
+            }
+
+            currentCapacityIndex = nextCapacityIndex;
+        }
+
+        return indexSolutions;
 
     }
 
@@ -270,8 +438,8 @@ public class ZeroOneKnapsack {
         //the situation of no items being added yet in the algorithm. It offsets the indexes by one.
         //e.g. is numItems is 5, then were 4 added items and one 'buffer item'.
         int capacityIndex = maxCapacityUnits;
-        System.out.println("Starting itemIndex: " + itemIndex);
-        System.out.println("Starting capacityIndex: " + capacityIndex);
+        //System.out.println("Starting itemIndex: " + itemIndex);
+        //System.out.println("Starting capacityIndex: " + capacityIndex);
 
         //Set up the starting Position in the stack
         stack.push(new Position(itemIndex, capacityIndex));
@@ -279,7 +447,7 @@ public class ZeroOneKnapsack {
         visitedBoard[itemIndex][capacityIndex] = true;
         Position nextPosition = calcNextPosition(itemIndex, capacityIndex);
 
-        System.out.println("First next position: " + nextPosition.toString());
+        //System.out.println("First next position: " + nextPosition.toString());
 
         //Mark all the visited positions using DFS.
         while(!stack.isEmpty()) {
@@ -293,9 +461,9 @@ public class ZeroOneKnapsack {
                 return visitedPositions;
                 //positions have been visited.
             } else if (nextPosition == null) {
-                System.out.println("nextPosition is null");
+                //System.out.println("nextPosition is null");
                 //Can not keep going towards the 0th row need to go back
-                System.out.println("Previous index: " + itemIndex);
+                //System.out.println("Previous index: " + itemIndex);
                 stack.pop();
 
                 //Peek at the top of the stack to re-position ourselves on the board. From this
@@ -306,16 +474,16 @@ public class ZeroOneKnapsack {
                 assert (itemIndex == peekedPos.getItemIndex()) : new Error("Somethign went fucky fix it");
                 capacityIndex = peekedPos.getCapacityIndex();
 
-                System.out.println("Index after incrementing because nextPosition was null: " + itemIndex);
-                System.out.print(stack);
-                System.out.println();
+                //System.out.println("Index after incrementing because nextPosition was null: " + itemIndex);
+                //System.out.print(stack);
+                //System.out.println();
 
                 nextPosition = calcNextPosition(itemIndex, capacityIndex);
 
 
             } else if(nextPosition.getItemIndex() == 0) {
                 //Next position will reach the bottom row, add it to the stack
-                System.out.println("Reached the 0th row");
+                //System.out.println("Reached the 0th row");
                 stack.push(nextPosition);
 
                 //Have reached/moved to the bottom row now
@@ -326,21 +494,21 @@ public class ZeroOneKnapsack {
                 visitedBoard[itemIndex][capacityIndex] = true;
                 visitedPositions.add(new Position(itemIndex, capacityIndex));
 
-                System.out.println("\n");
-                System.out.println(stack);
-                System.out.println("\n\n");
+                //System.out.println("\n");
+                //System.out.println(stack);
+                //System.out.println("\n\n");
 
-                System.out.println("Solutions to far: " + solutions.toString());
+                //System.out.println("Solutions to far: " + solutions.toString());
 
                 //The next position should be null which results in us going back up the rows
                 //to explore a different branch
                 nextPosition = calcNextPosition(itemIndex, capacityIndex);
-                System.out.println("Next position next: !!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println(nextPosition);
+                //System.out.println("Next position next: !!!!!!!!!!!!!!!!!!!!!!!");
+                //System.out.println(nextPosition);
                 assert(nextPosition == null) : new Error("The next position is not null, which means the branch has not ended.");
 
             } else {
-                System.out.println("Found an actual next position to investigate.");
+                //System.out.println("Found an actual next position to investigate.");
                 //Has a next position to move to, add it to the stack and find the next Position
                 //it could move to in the DFS
                 stack.push(nextPosition);
@@ -355,7 +523,7 @@ public class ZeroOneKnapsack {
                 visitedBoard[itemIndex][capacityIndex] = true;
                 visitedPositions.add(new Position(itemIndex, capacityIndex));
 
-                System.out.println("currentItemIndex: " + itemIndex + " | currentCapacityIndex: " + capacityIndex);
+                //System.out.println("currentItemIndex: " + itemIndex + " | currentCapacityIndex: " + capacityIndex);
 
                 //Find if there is a next position to go to.
                 nextPosition = calcNextPosition(itemIndex, capacityIndex);
@@ -448,7 +616,7 @@ public class ZeroOneKnapsack {
 
         //Retrieve the corresponding items from their indexes and find the summary for the solution
         //then add it to the set containing all solutions.
-        ArrayList<Item> solutionItems = getSolutionItems(indexSolutions);
+        ArrayList<Item> solutionItems = getItemsFromItemIndexes(indexSolutions);
 
         String solutionSummary = Summary.summarizeKnapsackItems(solutionItems);
 
@@ -475,7 +643,7 @@ public class ZeroOneKnapsack {
 
         ArrayList<Integer> possibleCapacityIndexes = calcNextCapacityIndexes(currentItemIndex, currentCapacityIndex);
 
-        System.out.println("Possible capacity indexes: " + possibleCapacityIndexes);
+        //System.out.println("Possible capacity indexes: " + possibleCapacityIndexes);
 
         Position nextPosition = null;
 
@@ -483,7 +651,7 @@ public class ZeroOneKnapsack {
 
         for(int nextCapacityIndex : possibleCapacityIndexes) {
             if(!isPositionVisited(nextItemIndex, nextCapacityIndex)) {
-                System.out.println("Chosen for the nextItemIndex, nextCapacityIndex: " + nextItemIndex + ", " + nextCapacityIndex);
+                //System.out.println("Chosen for the nextItemIndex, nextCapacityIndex: " + nextItemIndex + ", " + nextCapacityIndex);
                 //Found a valid position in continuing this branch in the DFS. End the loop early.
                 return new Position(nextItemIndex, nextCapacityIndex);
             }
@@ -520,7 +688,17 @@ public class ZeroOneKnapsack {
      * @return Integer array of all possible capacityIndex values for the next position we can investigate in the (currentItemIndex - 1)th row.
      */
     private ArrayList<Integer> calcNextCapacityIndexes(int currentItemIndex, int currentCapacityIndex) {
+
         ArrayList<Integer> solutions = new ArrayList<>();
+
+        //If the the current itemIndex is 0, then we are at the 0th row in the board which
+        //represents the situation of having not added any items. From this position there is no
+        //next position on the board to move to in reconstructing the solution. Hence there
+        //are no capcityIndexes to return. Return the empty array.
+        if(currentItemIndex == 0) {
+            return solutions;
+        }
+
         double currentValue = getValue(currentItemIndex, currentCapacityIndex);
         double prevValue;
 
@@ -533,12 +711,15 @@ public class ZeroOneKnapsack {
         }
 
         //Check if it was possible the current item was addded.
-        int currentItemCost = items.get(currentItemIndex).getCostUnits();
+        int currentItemCostUnits = items.get(currentItemIndex).getCostUnits();
         double currentItemValue = items.get(currentItemIndex).getValue();
-        prevValue = getValue(currentItemIndex - 1,currentCapacityIndex - currentItemCost) + currentItemValue;
+
+        assert (currentItemValue >= 0) : new Error("The cost should not be negative");
+
+        prevValue = getValue(currentItemIndex - 1,currentCapacityIndex - currentItemCostUnits) + currentItemValue;
         if(Math.abs(currentValue - prevValue) < MATH_TOLERANCE) {
             //They are the same, so it was possible the current item was added to the solution
-            solutions.add(currentCapacityIndex - currentItemCost);
+            solutions.add(currentCapacityIndex - currentItemCostUnits);
         }
 
         return solutions;
