@@ -766,6 +766,131 @@ public class ZeroOneKnapsackUnitTest {
     }
 
     /**
+     * Check if all visited positions are marked correctly.
+     */
+    @Test
+    public void markSolutionPositions2() {
+        double budget = 0.05;
+        boolean[][] visitedBoardSolution = null;
+
+        double[][] customBoard = new double[][]{
+                {0,0,0,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,1,1,2,2},
+                {0,0,1,1,2,2}
+        };
+
+        boolean[][] modelVisitedBoardSolution = new boolean[][]{
+                {false,true,false,false,false,false},
+                {false,true,false,true,false,false},
+                {false,false,false,true,false,true},
+                {false,false,false,false,false,true}
+        };
+
+        knapsack.setBoard(customBoard);
+        knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
+        knapsack.addItem("A", 0.02); //Want the costUnits to be 2
+        knapsack.addItem("B", 0.02);
+        knapsack.addItem("C", 0.02);
+        knapsack.setNumItems(knapsack.getItems().size()); //Otherwise we get an exception thrown
+        knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
+
+        knapsack.setBoard(customBoard);
+
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod("markSolutionPositions");
+            m.setAccessible(true);
+            ArrayList<Position> visitedPositionSolution = (ArrayList<Position>) m.invoke(knapsack);
+            visitedBoardSolution = (boolean[][]) knapsack.getVisitedBoard();
+
+            //Check the visited positions have been marked correctly
+            assertEquals(visitedBoardSolution.length, modelVisitedBoardSolution.length);
+            assertEquals(visitedBoardSolution[0].length, modelVisitedBoardSolution[0].length);
+            for(int rowIndex = 0; rowIndex < visitedBoardSolution.length; rowIndex++) {
+                for(int columnIndex = 0; columnIndex < visitedBoardSolution[0].length; columnIndex++) {
+                    assertEquals(visitedBoardSolution[rowIndex][columnIndex], modelVisitedBoardSolution[rowIndex][columnIndex]);
+                }
+            }
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            fail();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            fail();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+
+    /**
+     * Check if all visited positions are marked correctly.
+     */
+    @Test
+    public void markSolutionPositions3() {
+        double budget = 0.05;
+        boolean[][] visitedBoardSolution = null;
+
+        double[][] customBoard = new double[][]{
+                {0,0,0,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,1,1,2,2},
+                {0,0,1,1,2,2},
+                {0,1,1,2,2,3},
+                {0,1,2,2,3,3}
+        };
+
+        boolean[][] modelVisitedBoardSolution = new boolean[][]{
+                {true,true,false,false,false,false},
+                {true,true,true,true,false,false},
+                {false,true,true,true,true,false},
+                {false,false,false,true,true,false},
+                {false,false,false,false,true,true},
+                {false,false,false,false,false,true}
+        };
+
+        knapsack.setBoard(customBoard);
+        knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
+        knapsack.addItem("A", 0.02); //Want the costUnits to be 2
+        knapsack.addItem("B", 0.02);
+        knapsack.addItem("C", 0.02);
+        knapsack.addItem("D", 0.01);
+        knapsack.addItem("E", 0.01);
+        knapsack.setNumItems(knapsack.getItems().size()); //Otherwise we get an exception thrown
+        knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
+
+        knapsack.setBoard(customBoard);
+
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod("markSolutionPositions");
+            m.setAccessible(true);
+            ArrayList<Position> visitedPositionSolution = (ArrayList<Position>) m.invoke(knapsack);
+            visitedBoardSolution = (boolean[][]) knapsack.getVisitedBoard();
+
+            //Check the visited positions have been marked correctly
+            assertEquals(visitedBoardSolution.length, modelVisitedBoardSolution.length);
+            assertEquals(visitedBoardSolution[0].length, modelVisitedBoardSolution[0].length);
+            for(int rowIndex = 0; rowIndex < visitedBoardSolution.length; rowIndex++) {
+                for(int columnIndex = 0; columnIndex < visitedBoardSolution[0].length; columnIndex++) {
+                    assertEquals(visitedBoardSolution[rowIndex][columnIndex], modelVisitedBoardSolution[rowIndex][columnIndex]);
+                }
+            }
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            fail();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            fail();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    /**
      * Check if an ArrayList<Position> can be sorted correctly in increasing order. First by
      * itemIndex and then by capacityIndex.
      */

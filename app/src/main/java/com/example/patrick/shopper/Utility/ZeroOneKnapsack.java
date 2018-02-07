@@ -239,6 +239,17 @@ public class ZeroOneKnapsack {
     private void reconstructSolutions() {
         ArrayList<Position> visitedPositions = markSolutionPositions();
 
+        //Using dynamic problem, at each cell in the board below store all the visited Position
+        //objects needed to reconstruct the solution starting from that area.
+        ArrayList<ArrayList<Set<ArrayList<Position>>>> board = new ArrayList<>();
+        for(int rowIndex = 0; rowIndex < numItems; rowIndex++) {
+            board.add(new ArrayList<Set<ArrayList<Position>>>());
+            for(int columnIndex = 0; columnIndex < maxCapacityUnits + 1; columnIndex++) {
+                board.get(rowIndex).add(new HashSet<ArrayList<Position>>());
+            }
+        }
+
+
 
     }
 
