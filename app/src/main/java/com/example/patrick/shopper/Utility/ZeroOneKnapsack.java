@@ -308,9 +308,6 @@ public class ZeroOneKnapsack {
                 }
 
             }
-
-            System.out.println();
-            System.out.println();
         }
 
         //Take set of all arrays of Positions at the bottom right corner in the solutionBoard.
@@ -774,7 +771,7 @@ public class ZeroOneKnapsack {
     }
 
     /**
-     * Used in debugging. Display the contents of the grid used in the algorithm.
+     * Used in debugging. Display the contents of the board used in the algorithm.
      */
     public void displayBoard() {
         for(double[] row : board) {
@@ -784,8 +781,6 @@ public class ZeroOneKnapsack {
             }
             System.out.println();
         }
-
-        //System.out.println(Arrays.deepToString(board));
     }
 
     public ArrayList<Item> getItems() {

@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -495,6 +496,84 @@ public class ZeroOneKnapsackUnitTest {
     }
 
     /**
+     * Test if the solutions can be reconstructed.
+     */
+    @Test
+    public void reconstructSolutionsTest2() {
+        double budget = 0.05;
+        ArrayList<String> solution = null;
+        double[][] customBoard = new double[][]{
+                {0,0,0,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,1,1,2,2},
+                {0,0,1,1,2,2},
+                {0,1,1,2,2,3},
+                {0,1,2,2,3,3}
+        };
+
+        String itemAInfo = "A";
+        String itemBInfo = "B";
+        String itemCInfo = "C";
+        String itemDInfo = "D";
+        String itemEInfo = "E";
+
+        ArrayList<String> modelSolutions = new ArrayList<>();
+        modelSolutions.add(itemAInfo + Summary.ITEM_DELIMITER + itemBInfo + Summary.ITEM_DELIMITER + itemDInfo);
+        modelSolutions.add(itemAInfo + Summary.ITEM_DELIMITER + itemBInfo + Summary.ITEM_DELIMITER + itemEInfo);
+        modelSolutions.add(itemAInfo + Summary.ITEM_DELIMITER + itemCInfo + Summary.ITEM_DELIMITER + itemDInfo);
+        modelSolutions.add(itemAInfo + Summary.ITEM_DELIMITER + itemCInfo + Summary.ITEM_DELIMITER + itemEInfo);
+        modelSolutions.add(itemBInfo + Summary.ITEM_DELIMITER + itemCInfo + Summary.ITEM_DELIMITER + itemDInfo);
+        modelSolutions.add(itemBInfo + Summary.ITEM_DELIMITER + itemCInfo + Summary.ITEM_DELIMITER + itemEInfo);
+        modelSolutions.add(itemAInfo + Summary.ITEM_DELIMITER + itemDInfo + Summary.ITEM_DELIMITER + itemEInfo);
+        modelSolutions.add(itemBInfo + Summary.ITEM_DELIMITER + itemDInfo + Summary.ITEM_DELIMITER + itemEInfo);
+        modelSolutions.add(itemCInfo + Summary.ITEM_DELIMITER + itemDInfo + Summary.ITEM_DELIMITER + itemEInfo);
+
+
+        knapsack.setBoard(customBoard);
+        knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
+        knapsack.addItem(itemAInfo, 0.02); //Want the costUnits to be 2
+        knapsack.addItem(itemBInfo, 0.02);
+        knapsack.addItem(itemCInfo, 0.02);
+        knapsack.addItem(itemDInfo, 0.01);
+        knapsack.addItem(itemEInfo, 0.01);
+
+        knapsack.setNumItems(knapsack.getItems().size()); //Otherwise we get an exception thrown
+        knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
+
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod(reconstructSolutionsMethodName);
+            m.setAccessible(true);
+            ArrayList<String> retrievedSolutions = (ArrayList<String>) m.invoke(knapsack);
+
+
+            //Make asserting easier
+            Comparator<String> comparator = new Comparator<String>() {
+                @Override
+                public int compare(String s, String t1) {
+                    return s.compareTo(t1);
+                }
+            };
+            retrievedSolutions.sort(comparator);
+            modelSolutions.sort(comparator);
+
+            //System.out.println(retrievedSolutions);
+            //System.out.println(modelSolutions);
+
+            assertTrue(retrievedSolutions.equals(modelSolutions));
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            fail();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            fail();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    /**
      * Test if the method immediately returns null when the itemIndex (i.e. row in board) is 0.
      * There is no next position when we have reached the 0th index.
      */
@@ -750,9 +829,7 @@ public class ZeroOneKnapsackUnitTest {
             assertEquals(visitedBoardSolution.length, modelVisitedBoardSolution.length);
             assertEquals(visitedBoardSolution[0].length, modelVisitedBoardSolution[0].length);
             for(int rowIndex = 0; rowIndex < visitedBoardSolution.length; rowIndex++) {
-                for(int columnIndex = 0; columnIndex < visitedBoardSolution[0].length; columnIndex++) {
-                    assertEquals(visitedBoardSolution[rowIndex][columnIndex], modelVisitedBoardSolution[rowIndex][columnIndex]);
-                }
+                assertArrayEquals(visitedBoardSolution[rowIndex], modelVisitedBoardSolution[rowIndex]);
             }
 
         } catch (NoSuchMethodException e) {
@@ -809,9 +886,7 @@ public class ZeroOneKnapsackUnitTest {
             assertEquals(visitedBoardSolution.length, modelVisitedBoardSolution.length);
             assertEquals(visitedBoardSolution[0].length, modelVisitedBoardSolution[0].length);
             for(int rowIndex = 0; rowIndex < visitedBoardSolution.length; rowIndex++) {
-                for(int columnIndex = 0; columnIndex < visitedBoardSolution[0].length; columnIndex++) {
-                    assertEquals(visitedBoardSolution[rowIndex][columnIndex], modelVisitedBoardSolution[rowIndex][columnIndex]);
-                }
+                assertArrayEquals(visitedBoardSolution[rowIndex], modelVisitedBoardSolution[rowIndex]);
             }
 
         } catch (NoSuchMethodException e) {
@@ -875,9 +950,7 @@ public class ZeroOneKnapsackUnitTest {
             assertEquals(visitedBoardSolution.length, modelVisitedBoardSolution.length);
             assertEquals(visitedBoardSolution[0].length, modelVisitedBoardSolution[0].length);
             for(int rowIndex = 0; rowIndex < visitedBoardSolution.length; rowIndex++) {
-                for(int columnIndex = 0; columnIndex < visitedBoardSolution[0].length; columnIndex++) {
-                    assertEquals(visitedBoardSolution[rowIndex][columnIndex], modelVisitedBoardSolution[rowIndex][columnIndex]);
-                }
+                assertArrayEquals(visitedBoardSolution[rowIndex], modelVisitedBoardSolution[rowIndex]);
             }
 
         } catch (NoSuchMethodException e) {
@@ -1015,6 +1088,37 @@ public class ZeroOneKnapsackUnitTest {
                 new Position(1,0), new Position(2,0), new Position(3,0)));
 
         ArrayList<Integer> modelSolution = new ArrayList<>();
+
+        try {
+            Method m = knapsack.getClass().getDeclaredMethod("retrieveItemIndexesInSolution", ArrayList.class);
+            m.setAccessible(true);
+            ArrayList<Integer> indexSolutions = (ArrayList<Integer>) m.invoke(knapsack, param);
+
+            assertTrue(indexSolutions.equals(modelSolution));
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            fail();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            fail();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+    }
+
+    /**
+     * Test if all the index can be correctly extracted if all positions are part o the solution.
+     */
+    @Test
+    public void retrieveItemIndexesInSolutionAll() {
+        ArrayList<Position> param = new ArrayList<>(Arrays.asList(new Position(0, 0),
+                new Position(1, 1), new Position(2, 2), new Position(3, 3),
+                new Position(4,4), new Position(5, 5)));
+
+        ArrayList<Integer> modelSolution = new ArrayList<>(Arrays.asList(1,2,3,4,5));
 
         try {
             Method m = knapsack.getClass().getDeclaredMethod("retrieveItemIndexesInSolution", ArrayList.class);
