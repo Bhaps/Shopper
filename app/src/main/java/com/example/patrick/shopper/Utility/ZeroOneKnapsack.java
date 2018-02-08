@@ -277,7 +277,7 @@ public class ZeroOneKnapsack {
 
                 //Will contain all the Positions that were included in the reconstruction of a
                 //single solution.
-                ArrayList<Position> positionArrayForSolution = new ArrayList<Position>(Arrays.asList(new Position(posItemIndex, posCapacityIndex)));
+                ArrayList<Position> positionArrayForSolution = new ArrayList<>(Arrays.asList(new Position(posItemIndex, posCapacityIndex)));
                 setOfPositionArraysForSolutions.add(positionArrayForSolution);
 
             } else {
