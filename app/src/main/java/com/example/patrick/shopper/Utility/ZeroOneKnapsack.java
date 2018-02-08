@@ -3,8 +3,10 @@ package com.example.patrick.shopper.Utility;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -73,6 +75,7 @@ public class ZeroOneKnapsack {
 
     /**
      * Add a new item to the array to be used in the algorithm.
+     *
      * @param info The needed information for the item.
      * @param cost The cost of the item in dollars. Will be converted into cents.
      */
@@ -84,6 +87,36 @@ public class ZeroOneKnapsack {
         int costUnits = calcUnits(cost, true);
 
         items.add(new Item(info, cost, costUnits, DEFAULT_VALUE));
+    }
+
+    /**
+     * Add all the items that will be maximized. Each item will be added to amount specified by its
+     * quantity.
+     *
+     * @param itemsInfoArray String array of elements which represent items.
+     */
+    public void fillKnapsackWithItems(String[] itemsInfoArray) {
+
+        //Add the items to the knapsack.
+        for(String itemSummary : itemsInfoArray) {
+            System.out.println("ITEM SUMMARY: " + itemSummary + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            double itemCost = Summary.extractCost(itemSummary);
+            int itemQuantity = Summary.extractQuantity(itemSummary);
+
+            //Add an item the same amount of times as specified by its quantity in the item
+            // information. Will later tally how many items there were and produce
+            //a final list where the new quantity of each item is displayed
+            for(int i = 0; i < itemQuantity; i++){
+                System.out.println("Added: " + itemSummary);
+
+                //Extract the cost from the itemSummary and set the knapsack item to that cost.
+                //The quantity in the itemSummary will be untouched (despite the amount of this item
+                //in the final answer may be different to its quantity as specified in its summary).
+                //This will be changed later. the ZeroOneKnapsack.Item info attribute will
+                //keep the original item summary.
+                addItem(itemSummary, itemCost);
+            }
+        }
     }
 
     /**
@@ -188,40 +221,147 @@ public class ZeroOneKnapsack {
     }
 
     /**
-     * Returns all the information of the items that are part of the solution.
-     * @return String of all the information of the items.
+     * Returns a summary of all the maximized lists as a single String.
+     *
+     * @return String of all the maximized lists.
      */
-    public String solve() {
+    public String solve(String[] itemsInfoArray) {
+
+        //Empty string to represent an empty list.
+        final String NO_SOLUTION = "";
+
+        fillKnapsackWithItems(itemsInfoArray);
+
         startKnapsack();
+        ArrayList<String> maximizedListSummaries = reconstructSolutions();
 
-        ArrayList<Integer> solutionIndexes = getSolutionIndexes();
-        ArrayList<Item> solutionItems = getItemsFromItemIndexes(solutionIndexes);
-
-        //Retrieving the solution works backwards starting from the last item added
-        //reverse the list so it is in the same order as the items are originally added.
-        Collections.reverse(solutionItems);
-
-        String summary = "";
-        for (Item item : solutionItems) {
-            summary += item.getInformation() + Summary.ITEM_DELIMITER;
+        if(maximizedListSummaries.size() == 1 && maximizedListSummaries.get(0).equals(NO_SOLUTION)) {
+            //The only element in maximizedListSummaries is the empty string. There are no solutions
+            //Avoid needless computation and just return no solution.
+            return NO_SOLUTION;
         }
 
-        //Remove the last item delimeter as it shouldn't be there since there isn't another
-        //item following it.
-        summary = summary.replaceAll(Summary.ITEM_DELIMITER + "$", "");
+        //Still need to tally the duplicate items and update the quantities displayed for each
+        //item
+        ArrayList<String> finalLists = tallyItems(maximizedListSummaries);
 
-        return summary;
+        //System.out.println("FINAL LIST: " + finalList);
+
+        //Summary of all the lists as a single String. Can only send a String to another
+        //activity, hence will summarize all the solutions into a single String.
+        String allFinalListsSummarized = "";
+        for (String maximizedList : finalLists) {
+            allFinalListsSummarized += maximizedList + Summary.LIST_DELIMITER;
+        }
+
+        //Remove the last item delimiter as it shouldn't be there since there isn't another
+        //item following it.
+        allFinalListsSummarized = allFinalListsSummarized.replaceAll(Summary.LIST_DELIMITER + "$", "");
+
+
+        return allFinalListsSummarized;
 
     }
 
-    /*
-    public String solve() {new Position(1,0),
+    /**
+     * Returns a summary of all the maximized lists as a single String.
+     *
+     * DEPRECATED: Should use ZeroOneKnapsack.solve(String[]) whose argument provides items to be
+     * added to the knapsack. This will take care of items that have a quantity greater than 1.
+     *
+     * @return String of all the maximized lists.
+     */
+    @Deprecated
+    public String solve() {
+
+        //Empty string to represent an empty list.
+        final String NO_SOLUTION = "";
+
         startKnapsack();
-        createNetwork();
+        ArrayList<String> maximizedListSummaries = reconstructSolutions();
 
-        return summary;
+        if(maximizedListSummaries.size() == 1 && maximizedListSummaries.get(0).equals(NO_SOLUTION)) {
+            //The only element in maximizedListSummaries is the empty string. There are no solutions
+            //Avoid needless computation and just return no solution.
+            return NO_SOLUTION;
+        }
 
-    }*/
+        //Still need to tally the duplicate items and update the quantities displayed for each
+        //item
+        ArrayList<String> finalLists = tallyItems(maximizedListSummaries);
+
+        //System.out.println("FINAL LIST: " + finalList);
+
+        //Summary of all the lists as a single String. Can only send a String to another
+        //activity, hence will summarize all the solutions into a single String.
+        String allFinalListsSummarized = "";
+        for (String maximizedList : finalLists) {
+            allFinalListsSummarized += maximizedList + Summary.LIST_DELIMITER;
+        }
+
+        //Remove the last item delimiter as it shouldn't be there since there isn't another
+        //item following it.
+        allFinalListsSummarized = allFinalListsSummarized.replaceAll(Summary.LIST_DELIMITER + "$", "");
+
+
+        return allFinalListsSummarized;
+
+    }
+
+    /**
+     *
+     * @param summarizedLists
+     * @return
+     */
+    private ArrayList<String> tallyItems(ArrayList<String> summarizedLists) {
+
+        System.out.println("The maximized lists provided: " + summarizedLists);
+
+        ArrayList<String> finalTalliedLists = new ArrayList<>();
+
+        for(String summarizedList : summarizedLists) {
+            String finalSummary = "";
+            //Will use the item information as the key and the value will the quantity of that item
+            //in the list
+            HashMap<String, Integer> itemTally = new HashMap<>();
+
+            String[] items = Summary.separateSummarizedList(summarizedList);
+            for (String itemInfo : items) {
+                if (itemTally.containsKey(itemInfo)) {
+                    //Increase the quantity by one
+                    itemTally.put(itemInfo, itemTally.get(itemInfo) + 1);
+                } else {
+                    //The item isn't in the HashMap yet, add the itemInfo with a quantity of 1
+                    itemTally.put(itemInfo, 1);
+                }
+            }
+
+            //Recreate the summary with the updated quantity for an item.
+            //The key is the old item info summary
+            Set<String> keys = itemTally.keySet();
+            System.out.println(itemTally.keySet());
+            System.out.println(itemTally.size());
+            for (String key : keys) {
+                System.out.println("Key: " + key);
+
+                int newItemQuantity = itemTally.get(key);
+                String itemName = Summary.extractName(key);
+                double cost = Summary.extractCost(key);
+
+                String newItemInfo = Summary.createItemInfo(itemName, cost, newItemQuantity);
+
+                finalSummary += newItemInfo + Summary.ITEM_DELIMITER;
+            }
+
+            //Remove the last delimiter since it's not supposed to be there as there is no following
+            //item information.
+            finalSummary = finalSummary.replaceAll(Summary.ITEM_DELIMITER + "$", "");
+
+            finalTalliedLists.add(finalSummary);
+        }
+        return finalTalliedLists;
+
+    }
 
     /**
      * Reconstruct all the solution by traversing the board.
@@ -896,5 +1036,7 @@ public class ZeroOneKnapsack {
         }
 
     }
+
+
 
 }

@@ -4,6 +4,7 @@ import android.widget.LinearLayout;
 import com.example.patrick.shopper.Utility.Summary;
 import com.example.patrick.shopper.Utility.ZeroOneKnapsack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +40,7 @@ public class MaximizeItemsCallable extends NotifyingCallable {
         ZeroOneKnapsack knapsack = new ZeroOneKnapsack(budget);
         knapsack.initKnapsack();
 
+        /*
         //Add the items to the knapsack.
         for(String itemSummary : itemsInfoArray) {
             System.out.println("ITEM SUMMARY: " + itemSummary + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -50,66 +52,23 @@ public class MaximizeItemsCallable extends NotifyingCallable {
             //a final list where the new quantity of each item is displayed
             for(int i = 0; i < itemQuantity; i++){
                 System.out.println("Added: " + itemSummary);
+
+                //Extract the cost from the itemSummary and set the knapsack item to that cost.
+                //The quantity in the itemSummary will be untouched (despite the amount of this item
+                //in the final answer may be different to its quantity as specified in its summary).
+                //This will be changed later. the ZeroOneKnapsack.Item info attribute will
+                //keep the original item summary.
                 knapsack.addItem(itemSummary, itemCost);
             }
-        }
+        }*/
 
-        String maximizedList = knapsack.solve();
-        System.out.println("ANSWER: " + maximizedList + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        String maximizedListSummaries = knapsack.solve(itemsInfoArray);
+        System.out.println("ANSWER: " + maximizedListSummaries + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-        //Still need to tally the duplicate items
-        String finalList = tallyItems(maximizedList);
 
-        System.out.println("FINAL LIST: " + finalList);
 
-        return finalList;
+        return maximizedListSummaries;
     }
 
-    /**
-     *
-     * @param summarizedList
-     * @return
-     */
-    private String tallyItems(String summarizedList) {
 
-        System.out.println("The maximized list provided: " + summarizedList);
-
-        String finalSummary = "";
-        //Will use the item information as the key and the value will the quantity of that item
-        //in the list
-        HashMap<String, Integer> itemTally = new HashMap<>();
-
-        String[] items = Summary.separateSummarizedList(summarizedList);
-        for(String itemInfo : items) {
-            if(itemTally.containsKey(itemInfo)) {
-                //Increase the quantity by one
-                itemTally.put(itemInfo, itemTally.get(itemInfo) + 1);
-            } else {
-                //The item isn't in the HashMap yet, add the itemInfo with a quantity of 1
-                itemTally.put(itemInfo, 1);
-            }
-        }
-
-        //Recreate the summary with the updated quantity for an item.
-        //The key is the old item info summary
-        Set<String> keys = itemTally.keySet();
-        for(String key : keys) {
-            System.out.println("Key: " + key);
-
-            int newItemQuantity = itemTally.get(key);
-            String itemName = Summary.extractName(key);
-            double cost = Summary.extractCost(key);
-
-            String newItemInfo = Summary.createItemInfo(itemName, cost, newItemQuantity);
-
-            finalSummary += newItemInfo + Summary.ITEM_DELIMITER;
-        }
-
-        //Remove the last delimiter since it's not supposed to be there as there is no following
-        //item information.
-        finalSummary = finalSummary.replaceAll(Summary.ITEM_DELIMITER + "$", "");
-
-        return finalSummary;
-
-    }
 }

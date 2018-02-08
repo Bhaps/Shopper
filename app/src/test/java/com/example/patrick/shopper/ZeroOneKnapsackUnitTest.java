@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,8 +36,12 @@ public class ZeroOneKnapsackUnitTest {
     private final String calcNextCapacityIndexesMethodName = "calcNextCapacityIndexes";
     private final String reconstructSolutionsMethodName = "reconstructSolutions";
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    Comparator<String> comparator = new Comparator<String>() {
+        @Override
+        public int compare(String s, String t1) {
+            return s.compareTo(t1);
+        }
+    };
 
 
     @Before
@@ -244,57 +249,113 @@ public class ZeroOneKnapsackUnitTest {
         String itemEInfo = "E" + Summary.INFO_DELIMITER + "0.90" + Summary.INFO_DELIMITER + "1";
         String itemFInfo = "F" + Summary.INFO_DELIMITER + "0.70" + Summary.INFO_DELIMITER + "1";
 
-        knapsack.addItem(itemAInfo, 1.00);
-        knapsack.addItem(itemBInfo, 1.20);
-        knapsack.addItem(itemCInfo, 5.00);
-        knapsack.addItem(itemDInfo, 2.10);
-        knapsack.addItem(itemEInfo, 0.90);
-        knapsack.addItem(itemFInfo, 0.70);
+        String[] items = new String[]{itemAInfo, itemBInfo, itemCInfo,
+                itemDInfo, itemEInfo, itemFInfo};
 
-        //System.out.println(knapsack.getItems());
+        String modelSolution = itemBInfo + Summary.ITEM_DELIMITER + itemDInfo + Summary.ITEM_DELIMITER + itemEInfo + Summary.ITEM_DELIMITER + itemFInfo + Summary.LIST_DELIMITER +
+                itemAInfo + Summary.ITEM_DELIMITER + itemBInfo + Summary.ITEM_DELIMITER + itemDInfo + Summary.ITEM_DELIMITER + itemFInfo + Summary.LIST_DELIMITER +
+                itemAInfo + Summary.ITEM_DELIMITER + itemDInfo + Summary.ITEM_DELIMITER + itemEInfo + Summary.ITEM_DELIMITER + itemFInfo + Summary.LIST_DELIMITER +
+                itemAInfo + Summary.ITEM_DELIMITER + itemBInfo + Summary.ITEM_DELIMITER + itemEInfo + Summary.ITEM_DELIMITER + itemFInfo;
 
-        String modelSolution = itemAInfo + Summary.ITEM_DELIMITER +
-                itemBInfo + Summary.ITEM_DELIMITER + itemDInfo + Summary.ITEM_DELIMITER +
-                itemFInfo;
-
-        String solution = knapsack.solve();
-
-        //knapsack.displayBoard();
-
-        //System.out.println(solution);
-
-        assertTrue(modelSolution.equals(solution));
+        String solution = knapsack.solve(items);
+        assertMaximizedListsEqual(solution, modelSolution);
     }
 
     @Test
     public void solveTest2() {
-        String itemInfo1 = "Item1;1.00;1;";
-        String itemInfo2 = "Item2;2.00;1;";
-        String itemInfo3 = "Item3;1.50;1";
+        String itemInfo1 = "Item1" + Summary.INFO_DELIMITER + "1.00" + Summary.INFO_DELIMITER + "1";
+        String itemInfo2 = "Item2" + Summary.INFO_DELIMITER + "2.00"  + Summary.INFO_DELIMITER + "1";
+        String itemInfo3 = "Item3" + Summary.INFO_DELIMITER + "1.50" + Summary.INFO_DELIMITER + "1";
 
         String modelSolution = itemInfo1 + Summary.ITEM_DELIMITER + itemInfo2 +
                 Summary.ITEM_DELIMITER + itemInfo3;
 
         knapsack.setBudget(5.00);
+
+        String[] items = new String[]{itemInfo1, itemInfo2, itemInfo3};
+
+        String solution = knapsack.solve(items);
+
+        System.out.println(solution);
+        System.out.println(modelSolution);
+
+        assertMaximizedListsEqual(solution, modelSolution);
+    }
+
+    /**
+     * Test if the correct maximized list can be calculated when an item has a quantity greater
+     * than 1.
+     */
+    @Test
+    public void solveTestDuplicateItems() {
+        String itemInfo1 = "Item1" + Summary.INFO_DELIMITER + "1.00" + Summary.INFO_DELIMITER + "3";
+        String itemInfo2 = "Item2" + Summary.INFO_DELIMITER + "2.00"  + Summary.INFO_DELIMITER + "1";
+
+        String modelSolution = "Item1" + Summary.INFO_DELIMITER + "1.00" + Summary.INFO_DELIMITER + "2";
+
+        String[] items = new String[]{itemInfo1, itemInfo2};
+
+        knapsack.setBudget(2.00);
         knapsack.addItem(itemInfo1, 1.00);
         knapsack.addItem(itemInfo2, 2.00);
-        knapsack.addItem(itemInfo3, 1.50);
 
-        String solution = knapsack.solve();
+        String solution = knapsack.solve(items);
 
         //System.out.println("Solution: " + solution);
 
-        assertTrue(solution.equals(modelSolution));
+        System.out.println(modelSolution);
+        System.out.println(solution);
+
+        assertMaximizedListsEqual(solution, modelSolution);
+    }
+
+    /**
+     * Test if the correct maximized list can be calculated when an item has a quantity greater
+     * than 1.
+     */
+    @Test
+    public void solveTestDuplicateItems2() {
+        String itemInfo1 = "Item1" + Summary.INFO_DELIMITER + "1.00" + Summary.INFO_DELIMITER + "3";
+
+        String modelSolution = "Item1" + Summary.INFO_DELIMITER + "1.00" + Summary.INFO_DELIMITER + "2";
+
+        knapsack.setBudget(2.00);
+        knapsack.addItem(itemInfo1, 1.00);
+
+        String[] items = new String[]{itemInfo1};
+
+        String solution = knapsack.solve(items);
+
+        //System.out.println("Solution: " + solution);
+
+        System.out.println(modelSolution);
+        System.out.println(solution);
+
+        assertMaximizedListsEqual(solution, modelSolution);
     }
 
     /**
      * Test if the algorithm gives the correct result when no items are added.
      */
     @Test
-    public void solveTestNone() {
+    public void solveTestNoItemsAdded() {
         String modelSolution = "";
-        String solution = knapsack.solve();
-        assertTrue(modelSolution.equals(solution));
+        String solution = knapsack.solve(new String[0]);
+        assertMaximizedListsEqual(solution, modelSolution);
+    }
+
+    /**
+     * Test if the algorithm gives the correct result when all the items are above the budget.
+     */
+    @Test
+    public void solveTestNoneUnderBudget() {
+        String modelSolution = "";
+        knapsack.setBudget(5.00);
+        String itemA = "A" + Summary.INFO_DELIMITER + "5.01" + Summary.INFO_DELIMITER + "1";
+        String itemB = "B" + Summary.INFO_DELIMITER + "5.01" + Summary.INFO_DELIMITER + "1";
+        String[] items = new String[]{itemA, itemB};
+        String solution = knapsack.solve(items);
+        assertMaximizedListsEqual(solution, modelSolution);
     }
 
     /**
@@ -480,6 +541,62 @@ public class ZeroOneKnapsackUnitTest {
             Method m = knapsack.getClass().getDeclaredMethod(reconstructSolutionsMethodName);
             m.setAccessible(true);
             ArrayList<String> retrievedSolutions = (ArrayList<String>) m.invoke(knapsack);
+
+            assertTrue(retrievedSolutions.equals(modelSolutions));
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            fail();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            fail();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    /**
+     * Test if the solutions can be reconstructed when there are duplicate items. Without
+     * getting duplicate solutions.
+     */
+    @Test
+    public void reconstructSolutionsDuplicates() {
+        double budget = 0.05;
+        ArrayList<String> solution = null;
+
+        double[][] customBoard = new double[][]{
+                {0,0,0,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,1,1,2,2},
+                {0,0,1,1,2,2}
+        };
+
+        String itemAInfo = "A";
+        String itemBInfo = "B";
+        String itemCInfo = "C";
+
+        ArrayList<String> modelSolutions = new ArrayList<>();
+        modelSolutions.add(itemAInfo + Summary.ITEM_DELIMITER + itemBInfo);
+        modelSolutions.add(itemAInfo + Summary.ITEM_DELIMITER + itemCInfo);
+        modelSolutions.add(itemBInfo + Summary.ITEM_DELIMITER + itemCInfo);
+
+        //knapsack.setBoard(customBoard);
+
+        knapsack.setBudget(budget); //Want maxCapacityUnits to be 5
+        knapsack.addItem("A", 0.02); //Want the costUnits to be 2
+        knapsack.addItem("B", 0.02);
+        knapsack.addItem("C", 0.03); //Want the costUnits to be 3
+        //knapsack.setNumItems(knapsack.getItems().size()); //Otherwise we get an exception thrown
+        //knapsack.setMaxCapacityUnits(knapsack.calcUnits(budget, false));
+
+        try {
+            Method startKnapsackMethod = knapsack.getClass().getDeclaredMethod("startKnapsack");
+            Method reconstructSolutionMethod = knapsack.getClass().getDeclaredMethod(reconstructSolutionsMethodName);
+            startKnapsackMethod.setAccessible(true);
+            reconstructSolutionMethod.setAccessible(true);
+            startKnapsackMethod.invoke(knapsack);
+            ArrayList<String> retrievedSolutions = (ArrayList<String>) reconstructSolutionMethod.invoke(knapsack);
 
             assertTrue(retrievedSolutions.equals(modelSolutions));
 
@@ -1138,6 +1255,48 @@ public class ZeroOneKnapsackUnitTest {
             fail();
         }
 
+    }
+
+    /**
+     * Custom assert that will solve the issue of the items being in the wrong order.
+     */
+    private void assertMaximizedListsEqual(String retrievedSolution, String modelSolutions) {
+        ArrayList<String> retrievedLists = new ArrayList<>(Arrays.asList(Summary.separateMaximizedListSolutionss(retrievedSolution)));
+        ArrayList<String> modelLists = new ArrayList<>(Arrays.asList(Summary.separateMaximizedListSolutionss(modelSolutions)));
+
+        ArrayList<String> sortedRetrievedSolutions = new ArrayList<>();
+        ArrayList<String> sortedModelLists = new ArrayList<>();
+
+        for(String retrievedList : retrievedLists) {
+            sortedRetrievedSolutions.add(sortItems(retrievedList));
+        }
+
+        for(String modelList : modelLists) {
+            sortedModelLists.add(sortItems(modelList));
+        }
+
+        sortedModelLists.sort(comparator);
+        sortedRetrievedSolutions.sort(comparator);
+
+        System.out.println("Model solution: " + sortedModelLists);
+        System.out.println("Retrieved solution: " + sortedRetrievedSolutions);
+
+        assertEquals(sortedModelLists.size(), sortedRetrievedSolutions.size());
+        for(int i = 0; i < sortedModelLists.size(); i++) {
+            assertTrue(sortedModelLists.get(i).equals(sortedRetrievedSolutions.get(i)));
+        }
+
+    }
+
+    /**
+     * A String containing information of a list of items and returns a sorted summary.
+     * @param listSummary List of items.
+     * @return The same list of items but sorted.
+     */
+    private String sortItems(String listSummary) {
+        ArrayList<String> items = new ArrayList<>(Arrays.asList(Summary.separateSummarizedList(listSummary)));
+        items.sort(comparator);
+        return Summary.summarizeStringArrayOfItems(items);
     }
 
 }

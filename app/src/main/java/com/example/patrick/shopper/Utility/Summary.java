@@ -54,7 +54,7 @@ public abstract class Summary {
      * @return A String where name, cost and quantity are separated by the ITEM_INFO_DELIMETER
      */
     public static String createItemInfo(String name, double cost, int quantity) {
-        return name + INFO_DELIMITER + Double.toString(cost) + INFO_DELIMITER +
+        return name + INFO_DELIMITER + String.format("%.2f", cost) + INFO_DELIMITER +
                 Integer.toString(quantity);
     }
 
@@ -69,6 +69,16 @@ public abstract class Summary {
         String[] items = summarizedList.split(Summary.ITEM_DELIMITER);
 
         return items;
+    }
+
+    /**
+     * Separate a String containing all the maximized lists.
+     * @param maximizedListSolutions String with all the solution/maximized lists.
+     * @return String array where each element is a maximized list.
+     */
+    public static String[] separateMaximizedListSolutionss(String maximizedListSolutions) {
+        String[] lists = maximizedListSolutions.split(LIST_DELIMITER);
+        return lists;
     }
 
     /**
@@ -147,6 +157,21 @@ public abstract class Summary {
         }
         return summary.replaceAll(Summary.ITEM_DELIMITER + "$", "");
     }
+
+    /**
+     * Create a summary from an ArrayList<String> of items
+     * @param items The array of items to be summarized.
+     * @return String with all the items summarized as a list.
+     */
+    public static String summarizeStringArrayOfItems(ArrayList<String> items) {
+        String summary = "";
+        for (String item : items) {
+            summary += item + Summary.ITEM_DELIMITER;
+        }
+        return summary.replaceAll(Summary.ITEM_DELIMITER + "$", "");
+    }
+
+
 
 
 }
