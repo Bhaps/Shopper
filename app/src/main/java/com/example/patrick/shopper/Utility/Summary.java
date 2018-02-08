@@ -123,7 +123,6 @@ public abstract class Summary {
      * @return The price of the item.
      */
     public static double extractCost(String itemInformation) {
-        System.out.println("Provided information: " + itemInformation);
 
         assert itemInformation.equals(null) : "itemInformation is null";
 

@@ -99,7 +99,6 @@ public class ZeroOneKnapsack {
 
         //Add the items to the knapsack.
         for(String itemSummary : itemsInfoArray) {
-            System.out.println("ITEM SUMMARY: " + itemSummary + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             double itemCost = Summary.extractCost(itemSummary);
             int itemQuantity = Summary.extractQuantity(itemSummary);
 
@@ -107,7 +106,6 @@ public class ZeroOneKnapsack {
             // information. Will later tally how many items there were and produce
             //a final list where the new quantity of each item is displayed
             for(int i = 0; i < itemQuantity; i++){
-                System.out.println("Added: " + itemSummary);
 
                 //Extract the cost from the itemSummary and set the knapsack item to that cost.
                 //The quantity in the itemSummary will be untouched (despite the amount of this item
@@ -129,11 +127,6 @@ public class ZeroOneKnapsack {
         //Need a base case where there are no items added. The algorithm starts at itemIndex 1
         //and capacityIndex 1. Hence first row and column are 0's to represent no items added.
         addItem("Buffer to represent no items", -1.0);
-
-
-
-        //System.out.println("Number of items: " + numItems);
-        //System.out.println(Arrays.deepToString(board));
     }
 
     /**
@@ -245,8 +238,6 @@ public class ZeroOneKnapsack {
         //item
         ArrayList<String> finalLists = tallyItems(maximizedListSummaries);
 
-        //System.out.println("FINAL LIST: " + finalList);
-
         //Summary of all the lists as a single String. Can only send a String to another
         //activity, hence will summarize all the solutions into a single String.
         String allFinalListsSummarized = "";
@@ -290,8 +281,6 @@ public class ZeroOneKnapsack {
         //item
         ArrayList<String> finalLists = tallyItems(maximizedListSummaries);
 
-        //System.out.println("FINAL LIST: " + finalList);
-
         //Summary of all the lists as a single String. Can only send a String to another
         //activity, hence will summarize all the solutions into a single String.
         String allFinalListsSummarized = "";
@@ -314,9 +303,6 @@ public class ZeroOneKnapsack {
      * @return
      */
     private ArrayList<String> tallyItems(ArrayList<String> summarizedLists) {
-
-        System.out.println("The maximized lists provided: " + summarizedLists);
-
         ArrayList<String> finalTalliedLists = new ArrayList<>();
 
         for(String summarizedList : summarizedLists) {
@@ -339,11 +325,7 @@ public class ZeroOneKnapsack {
             //Recreate the summary with the updated quantity for an item.
             //The key is the old item info summary
             Set<String> keys = itemTally.keySet();
-            System.out.println(itemTally.keySet());
-            System.out.println(itemTally.size());
             for (String key : keys) {
-                System.out.println("Key: " + key);
-
                 int newItemQuantity = itemTally.get(key);
                 String itemName = Summary.extractName(key);
                 double cost = Summary.extractCost(key);
@@ -575,16 +557,12 @@ public class ZeroOneKnapsack {
         //the situation of no items being added yet in the algorithm. It offsets the indexes by one.
         //e.g. is numItems is 5, then were 4 added items and one 'buffer item'.
         int capacityIndex = maxCapacityUnits;
-        //System.out.println("Starting itemIndex: " + itemIndex);
-        //System.out.println("Starting capacityIndex: " + capacityIndex);
 
         //Set up the starting Position in the stack
         stack.push(new Position(itemIndex, capacityIndex));
         visitedPositions.add(new Position(itemIndex, capacityIndex));
         visitedBoard[itemIndex][capacityIndex] = true;
         Position nextPosition = calcNextPosition(itemIndex, capacityIndex);
-
-        //System.out.println("First next position: " + nextPosition.toString());
 
         //Mark all the visited positions using DFS.
         while(!stack.isEmpty()) {
@@ -598,9 +576,7 @@ public class ZeroOneKnapsack {
                 return visitedPositions;
                 //positions have been visited.
             } else if (nextPosition == null) {
-                //System.out.println("nextPosition is null");
                 //Can not keep going towards the 0th row need to go back
-                //System.out.println("Previous index: " + itemIndex);
                 stack.pop();
 
                 //Peek at the top of the stack to re-position ourselves on the board. From this
@@ -611,16 +587,11 @@ public class ZeroOneKnapsack {
                 assert (itemIndex == peekedPos.getItemIndex()) : new Error("Somethign went fucky fix it");
                 capacityIndex = peekedPos.getCapacityIndex();
 
-                //System.out.println("Index after incrementing because nextPosition was null: " + itemIndex);
-                //System.out.print(stack);
-                //System.out.println();
-
                 nextPosition = calcNextPosition(itemIndex, capacityIndex);
 
 
             } else if(nextPosition.getItemIndex() == 0) {
                 //Next position will reach the bottom row, add it to the stack
-                //System.out.println("Reached the 0th row");
                 stack.push(nextPosition);
 
                 //Have reached/moved to the bottom row now
@@ -631,21 +602,13 @@ public class ZeroOneKnapsack {
                 visitedBoard[itemIndex][capacityIndex] = true;
                 visitedPositions.add(new Position(itemIndex, capacityIndex));
 
-                //System.out.println("\n");
-                //System.out.println(stack);
-                //System.out.println("\n\n");
-
-                //System.out.println("Solutions to far: " + solutions.toString());
 
                 //The next position should be null which results in us going back up the rows
                 //to explore a different branch
                 nextPosition = calcNextPosition(itemIndex, capacityIndex);
-                //System.out.println("Next position next: !!!!!!!!!!!!!!!!!!!!!!!");
-                //System.out.println(nextPosition);
                 assert(nextPosition == null) : new Error("The next position is not null, which means the branch has not ended.");
 
             } else {
-                //System.out.println("Found an actual next position to investigate.");
                 //Has a next position to move to, add it to the stack and find the next Position
                 //it could move to in the DFS
                 stack.push(nextPosition);
@@ -660,27 +623,10 @@ public class ZeroOneKnapsack {
                 visitedBoard[itemIndex][capacityIndex] = true;
                 visitedPositions.add(new Position(itemIndex, capacityIndex));
 
-                //System.out.println("currentItemIndex: " + itemIndex + " | currentCapacityIndex: " + capacityIndex);
-
                 //Find if there is a next position to go to.
                 nextPosition = calcNextPosition(itemIndex, capacityIndex);
-                //System.out.println("Next position: " + nextPosition.toString());
             }
         }
-
-        /*
-        while(itemIndex > 0 && capacityIndex > 0) {
-            if(getValue(itemIndex, capacityIndex) != getValue(itemIndex - 1, capacityIndex)) {
-                //Item was added to the knapsack
-                nextNode.setValue(itemIndex);
-                addedItemIndexes.add(itemIndex);
-
-                capacityIndex -= items.get(itemIndex).getCostUnits();
-            }
-            itemIndex -= 1; //Move down to the next item to see if it was added
-        }*/
-
-
 
         visitedPositions = sortPositionArray(visitedPositions);
         return visitedPositions;
@@ -780,15 +726,12 @@ public class ZeroOneKnapsack {
 
         ArrayList<Integer> possibleCapacityIndexes = calcNextCapacityIndexes(currentItemIndex, currentCapacityIndex);
 
-        //System.out.println("Possible capacity indexes: " + possibleCapacityIndexes);
-
         Position nextPosition = null;
 
         int nextItemIndex = currentItemIndex - 1;
 
         for(int nextCapacityIndex : possibleCapacityIndexes) {
             if(!isPositionVisited(nextItemIndex, nextCapacityIndex)) {
-                //System.out.println("Chosen for the nextItemIndex, nextCapacityIndex: " + nextItemIndex + ", " + nextCapacityIndex);
                 //Found a valid position in continuing this branch in the DFS. End the loop early.
                 return new Position(nextItemIndex, nextCapacityIndex);
             }
@@ -908,19 +851,6 @@ public class ZeroOneKnapsack {
         }
 
         return units;
-    }
-
-    /**
-     * Used in debugging. Display the contents of the board used in the algorithm.
-     */
-    public void displayBoard() {
-        for(double[] row : board) {
-            for(double element : row) {
-                System.out.print(element);
-                System.out.print("\t");
-            }
-            System.out.println();
-        }
     }
 
     public ArrayList<Item> getItems() {

@@ -276,9 +276,6 @@ public class ZeroOneKnapsackUnitTest {
 
         String solution = knapsack.solve(items);
 
-        System.out.println(solution);
-        System.out.println(modelSolution);
-
         assertMaximizedListsEqual(solution, modelSolution);
     }
 
@@ -301,11 +298,6 @@ public class ZeroOneKnapsackUnitTest {
 
         String solution = knapsack.solve(items);
 
-        //System.out.println("Solution: " + solution);
-
-        System.out.println(modelSolution);
-        System.out.println(solution);
-
         assertMaximizedListsEqual(solution, modelSolution);
     }
 
@@ -325,11 +317,6 @@ public class ZeroOneKnapsackUnitTest {
         String[] items = new String[]{itemInfo1};
 
         String solution = knapsack.solve(items);
-
-        //System.out.println("Solution: " + solution);
-
-        System.out.println(modelSolution);
-        System.out.println(solution);
 
         assertMaximizedListsEqual(solution, modelSolution);
     }
@@ -672,9 +659,6 @@ public class ZeroOneKnapsackUnitTest {
             };
             retrievedSolutions.sort(comparator);
             modelSolutions.sort(comparator);
-
-            //System.out.println(retrievedSolutions);
-            //System.out.println(modelSolutions);
 
             assertTrue(retrievedSolutions.equals(modelSolutions));
 
@@ -1146,9 +1130,6 @@ public class ZeroOneKnapsackUnitTest {
             m.setAccessible(true);
             ArrayList<Integer> indexSolutions = (ArrayList<Integer>) m.invoke(knapsack, param);
 
-            //System.out.println(indexSolutions);
-            //System.out.println(modelSolution);
-
             assertTrue(indexSolutions.equals(modelSolution));
 
         } catch (NoSuchMethodException e) {
@@ -1277,9 +1258,6 @@ public class ZeroOneKnapsackUnitTest {
 
         sortedModelLists.sort(comparator);
         sortedRetrievedSolutions.sort(comparator);
-
-        System.out.println("Model solution: " + sortedModelLists);
-        System.out.println("Retrieved solution: " + sortedRetrievedSolutions);
 
         assertEquals(sortedModelLists.size(), sortedRetrievedSolutions.size());
         for(int i = 0; i < sortedModelLists.size(); i++) {
