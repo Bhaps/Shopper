@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import com.example.patrick.shopper.CustomViews.ItemView;
 import com.example.patrick.shopper.R;
@@ -25,6 +26,9 @@ public class MaximizedListActivity extends AppCompatActivity {
     private ArrayList<ArrayList<ItemView>> maximizedItemLists = new ArrayList<>();
     private int currentMaximizedListIndex = 0;
 
+    private ImageButton nextListImageBtn;
+    private ImageButton prevListImageBtn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,19 @@ public class MaximizedListActivity extends AppCompatActivity {
         setCustomActionBar();
         processMaximizedResults();
         displayItemViews(currentMaximizedListIndex);
+
+        int numLists = maximizedItemLists.size();
+        if(numLists <= 1) {
+            //It is not possible to change lists since there are not multiple lists
+            //Disable both previous and next list buttons
+            nextListImageBtn.setClickable(false);
+            prevListImageBtn.setClickable(false);
+        } else {
+            //There are multiple lists, can click next but can't click previous since by default
+            //the first list is shown anyway
+            nextListImageBtn.setClickable(true);
+            prevListImageBtn.setClickable(false);
+        }
     }
 
     /**
@@ -95,6 +112,8 @@ public class MaximizedListActivity extends AppCompatActivity {
      */
     private void findViews() {
         maximizedListView = findViewById(R.id.maximizedList);
+        nextListImageBtn = findViewById(R.id.nextListImageBtn);
+        prevListImageBtn = findViewById(R.id.prevListImageBtn);
     }
 
 
@@ -115,6 +134,37 @@ public class MaximizedListActivity extends AppCompatActivity {
      */
     private String getMaximizedLists() {
         return getIntent().getStringExtra(Intent.EXTRA_TEXT);
+    }
+
+    /**
+     * Replace the current items being shown with the next list of items.
+     * @param view
+     */
+    public void showNextList(View view) {
+
+    }
+
+    /**
+     * Replace the current items being shown with the previous list of items.
+     * @param view
+     */
+    public void showPrevList(View view) {
+
+    }
+
+    /**
+     * User has decided to move to different lists, disable and enable the required buttons.
+     */
+    private void updateListNavigationButtonClickability() {
+
+    }
+
+
+    /**
+     * Clear the ItemView that are displayed.
+     */
+    private void clearItems() {
+        maximizedListView.removeAllViews();
     }
 
     /**

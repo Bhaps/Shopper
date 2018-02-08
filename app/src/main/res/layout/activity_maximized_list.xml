@@ -6,6 +6,9 @@
     android:layout_height="match_parent"
     tools:context="com.example.patrick.shopper.Activities.MaximizedListActivity">
 
-    <include layout="@layout/content_maximized_list" />
+    <include
+        layout="@layout/content_maximized_list"
+        android:layout_height="480dp"
+        tools:layout_editor_absoluteY="31dp" />
 
 </android.support.design.widget.CoordinatorLayout>
