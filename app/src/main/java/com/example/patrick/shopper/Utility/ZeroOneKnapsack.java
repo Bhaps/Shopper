@@ -298,9 +298,12 @@ public class ZeroOneKnapsack {
     }
 
     /**
+     * Search through the items in the summarized lists and tally up all duplicate items.
+     * Duplicate items are those with the same item information. Update the quantity part of the
+     * item's information.
      *
-     * @param summarizedLists
-     * @return
+     * @param summarizedLists All the maximized lists.
+     * @return Maximized lists with updated quantity attributes for each item.
      */
     private ArrayList<String> tallyItems(ArrayList<String> summarizedLists) {
         ArrayList<String> finalTalliedLists = new ArrayList<>();
