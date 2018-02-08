@@ -10,6 +10,8 @@ import android.widget.LinearLayout;
 import com.example.patrick.shopper.CustomViews.ItemView;
 import com.example.patrick.shopper.R;
 import com.example.patrick.shopper.Utility.Summary;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -18,8 +20,11 @@ import java.util.Arrays;
  */
 public class MaximizedListActivity extends AppCompatActivity {
 
-    private LinearLayout maximizedList;
+    private LinearLayout maximizedListView;
     private Context context = this;
+    private ArrayList<ArrayList<ItemView>> maximizedItemLists = new ArrayList<>();
+    private int currentMaximizedListIndex = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +32,42 @@ public class MaximizedListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_maximized_list);
 
         findViews();
-        displayItemViews();
         setCustomActionBar();
+        processMaximizedResults();
+        displayItemViews(currentMaximizedListIndex);
+    }
+
+    /**
+     * Take the result from the zero one knapsack, separate the maximized lists and for each list
+     * create an ArrayList<ItemView> for the corresponding items. Store these arrays in
+     * maximizedItemLists to be accessed throughout the class.
+     */
+    private void processMaximizedResults() {
+        final String NO_SOLUTION = "";
+
+        String maximizedListSummaries = getMaximizedLists();
+        String[] maximizedListSummariesArray = Summary.separateMaximizedListSolutionss(maximizedListSummaries);
+
+        for(String maximizedListSummary : maximizedListSummariesArray) {
+
+            String[] items = Summary.separateSummarizedList(maximizedListSummary);
+
+            //The array of items containing all items for this maximized list.
+            ArrayList<ItemView> maximizedItems = new ArrayList<>();
+            for (String itemInfo : items) {
+                String itemName = Summary.extractName(itemInfo);
+                double itemCost = Summary.extractCost(itemInfo);
+                int itemQuantity = Summary.extractQuantity(itemInfo);
+
+                ItemView itemView = new ItemView(context, itemName, itemCost, itemQuantity);
+                itemView.hideRemoveButton();
+                maximizedItems.add(itemView);
+            }
+
+            maximizedItemLists.add(maximizedItems);
+
+
+        }
     }
 
     /**
@@ -55,38 +94,18 @@ public class MaximizedListActivity extends AppCompatActivity {
      * Find views by ID and instantiate them.
      */
     private void findViews() {
-        maximizedList = findViewById(R.id.maximizedList);
+        maximizedListView = findViewById(R.id.maximizedList);
     }
 
 
     /**
      * Add all the items to be displayed.
+     *
+     * @oaram maximizedListIndex The index for the list to be displayed from maximizedItemLists.
      */
-    private void displayItemViews() {
-        String summarizedList = getItemSummary();
-
-        System.out.println("Retrieved item summary to be added to the list: " + summarizedList);
-
-        if(summarizedList.equals("")) {
-            //Do nothing
-        } else {
-
-            String[] items = Summary.separateSummarizedList(summarizedList);
-
-            System.out.println("Summary that was split: " + Arrays.deepToString(items));
-
-            for (int itemIndex = 0; itemIndex < items.length; itemIndex++) {
-                String[] data = Summary.separateItemInformation(items[itemIndex]);
-
-                String name = data[Summary.ITEM_NAME_INDEX];
-                Double cost = Double.parseDouble(data[Summary.ITEM_COST_INDEX]);
-                int quantity = Integer.parseInt(data[Summary.ITEM_QUANTITY_INDEX]);
-
-                ItemView item = new ItemView(context, name, cost, quantity);
-                item.hideRemoveButton();
-
-                maximizedList.addView(item);
-            }
+    private void displayItemViews(int maximizedListIndex) {
+        for (ItemView itemView : maximizedItemLists.get(maximizedListIndex)) {
+            maximizedListView.addView(itemView);
         }
     }
 
@@ -94,7 +113,7 @@ public class MaximizedListActivity extends AppCompatActivity {
      * Retrieve the item summary from the previous activity.
      * @return The item summary.
      */
-    private String getItemSummary() {
+    private String getMaximizedLists() {
         return getIntent().getStringExtra(Intent.EXTRA_TEXT);
     }
 

@@ -27,11 +27,11 @@ public class StartMaximizedListActivity implements Runnable {
     @Override
     public void run() {
 
-        String maximizedListSummary = null;
+        String maximizedListsSummary = null;
 
 
         try {
-            maximizedListSummary = (String) future.get();
+            maximizedListsSummary = (String) future.get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -39,7 +39,7 @@ public class StartMaximizedListActivity implements Runnable {
         }
 
         System.out.flush();
-        intent.putExtra(Intent.EXTRA_TEXT, maximizedListSummary);
+        intent.putExtra(Intent.EXTRA_TEXT, maximizedListsSummary);
         context.startActivity(intent);
 
     }
