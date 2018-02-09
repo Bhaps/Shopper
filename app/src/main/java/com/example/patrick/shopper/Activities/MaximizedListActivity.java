@@ -13,7 +13,6 @@ import com.example.patrick.shopper.R;
 import com.example.patrick.shopper.Utility.Summary;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Activity is displayed when the user chooses to maximize their list. Will retrieve the summary of
@@ -28,6 +27,10 @@ public class MaximizedListActivity extends AppCompatActivity {
 
     private ImageButton nextListImageBtn;
     private ImageButton prevListImageBtn;
+
+    private int firstListIndex = 0;
+    private int showNextListValue = 1;
+    private int showPrevListValue = -1;
 
 
     @Override
@@ -133,6 +136,7 @@ public class MaximizedListActivity extends AppCompatActivity {
      * @return The item summary.
      */
     private String getMaximizedLists() {
+        System.out.println(getIntent().getStringExtra(Intent.EXTRA_TEXT));
         return getIntent().getStringExtra(Intent.EXTRA_TEXT);
     }
 
@@ -141,7 +145,9 @@ public class MaximizedListActivity extends AppCompatActivity {
      * @param view
      */
     public void showNextList(View view) {
-
+        updateListNavigationButtonClickability(showNextListValue);
+        clearItems();
+        displayItemViews(currentMaximizedListIndex);
     }
 
     /**
@@ -149,14 +155,37 @@ public class MaximizedListActivity extends AppCompatActivity {
      * @param view
      */
     public void showPrevList(View view) {
-
+        updateListNavigationButtonClickability(showPrevListValue);
+        clearItems();
+        displayItemViews(currentMaximizedListIndex);
     }
 
     /**
      * User has decided to move to different lists, disable and enable the required buttons.
+     *
+     * @param indexChange +1 to move to the next list, -1 to move to the prev list.
      */
-    private void updateListNavigationButtonClickability() {
+    private void updateListNavigationButtonClickability(int indexChange) {
+        int lastListIndex = maximizedItemLists.size() - 1;
 
+        if(currentMaximizedListIndex == firstListIndex && indexChange == showPrevListValue) {
+            //Do nothing, no previous list to display
+        } else if (currentMaximizedListIndex == lastListIndex && indexChange == showNextListValue) {
+            //do nothing, no next list to display
+        } else {
+            currentMaximizedListIndex += indexChange;
+        }
+
+        if(currentMaximizedListIndex == firstListIndex) {
+            prevListImageBtn.setClickable(false);
+            nextListImageBtn.setClickable(true);
+        } else if (currentMaximizedListIndex == lastListIndex) {
+            prevListImageBtn.setClickable(true);
+            nextListImageBtn.setClickable(false);
+        } else {
+            prevListImageBtn.setClickable(true);
+            nextListImageBtn.setClickable(true);
+        }
     }
 
 
