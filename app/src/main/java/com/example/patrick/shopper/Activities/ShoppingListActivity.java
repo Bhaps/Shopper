@@ -306,6 +306,15 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         budget = getEnteredBudget();
+
+                        //Round the budget to 2dp just in case the user enters the budget
+                        //with more decimal places
+                        double budgetInCents = budget * 100;
+                        double roundedBudgetInCents = Math.round(budgetInCents);
+                        double roundedBudgetInDollars = roundedBudgetInCents / 100;
+                        //Update the global variable with its value rounded to 2dp
+                        budget = roundedBudgetInDollars;
+
                         updateBudget();
                     }
                 });
@@ -394,7 +403,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     public void startMaximizingList(View view) {
         //First check that a budget has been entered.
         try {
-            double enteredBudget = getEnteredBudget();
+            double enteredBudget = budget;
 
             if(enteredBudget <= 0.0) {
                 throw new NumberFormatException("The budget cannot be zero or negative.");

@@ -22,84 +22,19 @@ import java.io.OutputStreamWriter;
  */
 public abstract class Storage {
 
-    private static final String FILENAME = "listedItems.dat";
-    //private static final int BUFFER_LENGTH = 10;
+    private static final String BUDGET_DATA_FILENAME = "budget.dat";
+    private static final String ITEM_DATA_FILENAME = "listedItems.dat";
 
 
-    /**
-     * Create the file if it does not exist already and return a file stream where
-     * we can read the summary of previously stored items.
-     *
-     * @return FileOutputStream of the file which stores the summary of previously listed items.
-     */
-    /*
-    private static FileInputStream openFileInputStream(Context context) {
-        /*
-        File file = new File(FILENAME);
-        FileInputStream fis = null;
+    public static String getBudget(Context context) {
 
-        try {
-            //If the file does not exist create it, no effect if it exists already
-            file.createNewFile();
+        return  null;
+    }
 
-            fis = new FileInputStream(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void saveBudget(Context context, double budget) {
 
-        return fis;
+    }
 
-
-    }*/
-
-    /**
-     * Create the file if it does not exist already and return a file stream where
-     * we can write the summary of items currently listed.
-     *
-     * @return FileOutputStream of the file which stores the summary of previously listed items.
-     */
-    /*
-    private static FileOutputStream openFileOutputStream() {
-        File file = new File(FILENAME);
-        FileOutputStream fos = null;
-
-        try {
-            //If the file does not exist create it, no effect if it exists already
-            file.createNewFile();
-
-            fos = new FileOutputStream(file, false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return fos;
-    }*/
-
-    /**
-     * Close the provided stream.
-     * @param stream
-     */
-    /*
-    private static void closeFileStream(FileOutputStream stream) {
-        try {
-            stream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
-
-    /**
-     * Close the provided stream.
-     * @param stream
-     */
-    /*
-    private static void closeFileStream(FileInputStream stream) {
-        try {
-            stream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     /**
      * Retrieve the summary of previously stored items from the file stream.
@@ -107,8 +42,8 @@ public abstract class Storage {
      */
     public static String getItemSummary(Context context) {
         //Check that the file exists in the first place, if not create it
-        if(!fileExists(context)) {
-            createFile(context);
+        if(!fileExists(context, ITEM_DATA_FILENAME)) {
+            createFile(context, ITEM_DATA_FILENAME);
         }
 
 
@@ -116,7 +51,7 @@ public abstract class Storage {
         String readLine = "";
 
         try {
-            FileInputStream fis = context.openFileInput(FILENAME);
+            FileInputStream fis = context.openFileInput(ITEM_DATA_FILENAME);
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader bufferedReader = new BufferedReader(isr);
 
@@ -137,47 +72,6 @@ public abstract class Storage {
         System.out.println("Retrieved item summary: " + stringBuilder.toString());
 
         return stringBuilder.toString();
-
-
-        /*
-        FileInputStream fos = openFileInputStream(context);
-        InputStreamReader inputStreamReader = new InputStreamReader(fos);
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        StringBuilder stringBuilder = new StringBuilder();
-
-        String readString = "";
-
-        try {
-            while((readString = bufferedReader.readLine()) != null) {
-                stringBuilder.append(readString);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-
-        //byte[] buffer = new byte[BUFFER_LENGTH];
-        /*
-        try {
-            // fos.read(buffer) will return the total number of bytes read into the buffer, or -1 if
-            // there is no more data because the end of the file has been reached.
-            while(fos.read(buffer) != -1) {
-                stringBuilder.append(new String(buffer));
-                buffer = new byte[BUFFER_LENGTH];
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-
-
-        /*
-        closeFileStream(fos);
-
-        String items = stringBuilder.toString();
-
-        return items;*/
     }
 
     /**
@@ -185,21 +79,11 @@ public abstract class Storage {
      * @param itemSummary
      */
     public static void saveItemSummary(String itemSummary, Context context) {
-        /*
-        FileOutputStream fos = openFileOutputStream();
-
-        try {
-            fos.write(itemSummary.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        closeFileStream(fos);*/
 
         System.out.println("Provided item summary: " + itemSummary);
 
         try {
-            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(ITEM_DATA_FILENAME, Context.MODE_PRIVATE);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
             BufferedWriter bw = new BufferedWriter(outputStreamWriter);
             bw.write(itemSummary);
@@ -216,10 +100,10 @@ public abstract class Storage {
      * Clear the contents of the file by writing the empty string to the start of the file.
      */
 
-    public static void clearFileContent(Context context) {
+    public static void clearFileContent(Context context, String filename) {
         FileOutputStream fos = null;
         try {
-            fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
             fos.write("".getBytes());
             fos.close();
         } catch (FileNotFoundException e) {
@@ -234,11 +118,11 @@ public abstract class Storage {
      * Create an empty file.
      * @param context
      */
-    private static void createFile(Context context) {
+    private static void createFile(Context context, String filename) {
         // MODE_PRIVATE will create the file (or replace a file of the same name) and
         // make it private to your application
         try {
-            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
             fos.write("".getBytes());
             fos.close();
         } catch (FileNotFoundException e) {
@@ -253,8 +137,8 @@ public abstract class Storage {
      * @param context The context from the main activity.
      * @return True if the file exists, False if it doesn't.
      */
-    private static boolean fileExists(Context context) {
-        File file = context.getFileStreamPath(FILENAME);
+    private static boolean fileExists(Context context, String filename) {
+        File file = context.getFileStreamPath(filename);
         return file.exists();
     }
 
