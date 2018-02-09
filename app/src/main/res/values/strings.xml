@@ -13,4 +13,5 @@
     <string name="cancel">Cancel</string>
     <string name="title_activity_optimized_list">OptimizedList</string>
     <string name="loading">Loading...</string>
+    <string name="item_name_example">e.g. Beef</string>
 </resources>

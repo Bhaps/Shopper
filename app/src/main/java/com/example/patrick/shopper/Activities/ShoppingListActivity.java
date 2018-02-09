@@ -336,7 +336,21 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
      * @param view
      */
     public void promptItemDetails(View view) {
+        clearPreviousEntries();
         itemDetailsAlertDialog.show();
+    }
+
+    /**
+     * Removes any leftover inputs from the last time the user used this dialog.
+     */
+    private void clearPreviousEntries() {
+        EditText nameEditTxt = itemDetailsDialogView.findViewById(R.id.enterName);
+        EditText priceEditTxt = itemDetailsDialogView.findViewById(R.id.enterPrice);
+        EditText quantityEditTxt = itemDetailsDialogView.findViewById(R.id.enterQuantity);
+
+        nameEditTxt.setText("");
+        priceEditTxt.setText("");
+        quantityEditTxt.setText("1");
     }
 
 

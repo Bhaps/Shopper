@@ -17,6 +17,8 @@ import java.util.ArrayList;
 /**
  * Activity is displayed when the user chooses to maximize their list. Will retrieve the summary of
  * items in the final list and display them.
+ *
+ * @author Patrick Ma
  */
 public class MaximizedListActivity extends AppCompatActivity {
 
