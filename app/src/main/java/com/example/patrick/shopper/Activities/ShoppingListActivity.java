@@ -306,14 +306,8 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         budget = getEnteredBudget();
-
-                        //Round the budget to 2dp just in case the user enters the budget
-                        //with more decimal places
-                        double budgetInCents = budget * 100;
-                        double roundedBudgetInCents = Math.round(budgetInCents);
-                        double roundedBudgetInDollars = roundedBudgetInCents / 100;
                         //Update the global variable with its value rounded to 2dp
-                        budget = roundedBudgetInDollars;
+                        budget = roundBudget(budget);
 
                         updateBudget();
                     }
@@ -339,6 +333,17 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         messageAlertDialog = messageAlertDialogBuilder.create();
     }
 
+    /**
+     * Roudn the budget to 2 decimal places. In the situation the user has entered more than 2 dp.
+     * @param budget
+     * @return
+     */
+    private double roundBudget(double budget) {
+        double budgetInCents = budget * 100;
+        double roundedBudgetInCents = Math.round(budgetInCents);
+        double roundedBudgetInDollars = roundedBudgetInCents / 100;
+        return roundedBudgetInDollars;
+    }
 
     /**
      * Show a dialog to prompt the user to enter the details for an item.
