@@ -10,15 +10,20 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.example.patrick.shopper.CustomViews.ItemView;
+import com.example.patrick.shopper.Exception.InvalidInput;
 import com.example.patrick.shopper.R;
 import com.example.patrick.shopper.Threads.StartMaximizedListActivity;
 import com.example.patrick.shopper.Threads.MaximizeItemsCallable;
 import com.example.patrick.shopper.Threads.ThreadCompleteListener;
+import com.example.patrick.shopper.Utility.InputCheck;
 import com.example.patrick.shopper.Utility.Storage;
 import com.example.patrick.shopper.Utility.Summary;
 import java.util.Arrays;
@@ -165,7 +170,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         initValues();
         initViews();
         initDialogs();
-        initList();
+        initListListeners();
 
         //Check if the user can maximize their items at the very beginning.
         setMaximizeBtnInteractability();
@@ -183,7 +188,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
      * Set up the itemList with its listeners which responds to items being removed and
      * added to the list.
      */
-    private void initList(){
+    private void initListListeners(){
         itemList.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
             @Override
             public void onChildViewAdded(View parent, View child) {
@@ -266,6 +271,18 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         budgetTxtView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //Focus the edit text so the user can enter their budget without manually
+                //bringing up the keyboard.
+                EditText budgetEditText = budgetDialogView.findViewById(R.id.budgetEditText);
+
+                //If the user enters a budget with more than 2dp, it will be rounded to 2dp.
+                //Set this rounded value to be in the edit text, to be shown, for the next time
+                //the user is prompted for entering a budget
+                budgetEditText.setText(new Double(budget).toString());
+
+                budgetEditText.requestFocus();
+
                 budgetAlertDialog.show();
             }
         });
@@ -282,8 +299,6 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
      */
     private ItemView createItem(String name, double price, int quantity) {
         ItemView newItem = new ItemView(context, name, price, quantity);
-
-
         return newItem;
     }
 
@@ -303,13 +318,25 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                 .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        getEnteredItemValues();
-                        ItemView newItem = createItem(lastEnteredName, lastEnteredPrice, lastEnteredQuantity);
-                        addItemToList(newItem);
-                        dialogInterface.dismiss();
+                        //Attempt to retrieve the item details entered by the user, if they
+                        //are not valid (and InvalidInput is thrown) then display an error
+                        //message using a dialog.
+                        try {
+                            getEnteredItemValues();
+                            dialogInterface.dismiss();
+                            ItemView newItem = createItem(lastEnteredName, lastEnteredPrice, lastEnteredQuantity);
+                            addItemToList(newItem);
+                        } catch (InvalidInput e) {
+                            dialogInterface.dismiss();
+                            showMessageDialog(e.getMessage());
+                        }
                     }
                 });
         itemDetailsAlertDialog = itemDetailsAlertDialogBuilder.create();
+        //Show the keyboard when top EditText, nameEditText, is focused.
+        Window itemWindow = itemDetailsAlertDialog.getWindow();
+        //Need to set some flags such that the keyboard will show up when the nameEditTxt is focused
+        itemWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
         //Create the dialog for prompting the user to enter their budget
         AlertDialog.Builder budgetAlertDialogBuilder = new AlertDialog.Builder(context);
@@ -331,6 +358,9 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                     }
                 });
         budgetAlertDialog = budgetAlertDialogBuilder.create();
+        //Need to set flags to allow the keyboard to show up for focused views
+        Window budgetWindow = budgetAlertDialog.getWindow();
+        budgetWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
         //Create the dialog for displaying the progress bar when the user has selected the
         //option to maximize their shopping list
@@ -369,6 +399,12 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
      */
     public void promptItemDetails(View view) {
         clearPreviousEntries();
+        EditText nameEditTxt = itemDetailsDialogView.findViewById(R.id.enterName);
+        nameEditTxt.requestFocus();
+
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(nameEditTxt, InputMethodManager.SHOW_IMPLICIT);
+
         itemDetailsAlertDialog.show();
     }
 
@@ -388,16 +424,33 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
 
     /**
      * Retrieve the values entered by the user from the EditText fields in the dialog.
+     *
+     * @return The entered name, cost and quantity of the item as a String array in that order.
      */
-
-    private void getEnteredItemValues() {
+    private void getEnteredItemValues() throws InvalidInput {
         EditText nameEditTxt = itemDetailsDialogView.findViewById(R.id.enterName);
         EditText priceEditTxt = itemDetailsDialogView.findViewById(R.id.enterPrice);
         EditText quantityEditTxt = itemDetailsDialogView.findViewById(R.id.enterQuantity);
 
-        lastEnteredName = nameEditTxt.getText().toString();
-        lastEnteredPrice = Double.parseDouble(priceEditTxt.getText().toString());
-        lastEnteredQuantity = Integer.parseInt(quantityEditTxt.getText().toString());
+        String name = nameEditTxt.getText().toString();
+        String price = priceEditTxt.getText().toString();
+        String quantity = quantityEditTxt.getText().toString();
+
+        if(InputCheck.name(name) && InputCheck.cost(price) && InputCheck.quantity(quantity)) {
+            //All the entered values pass their checks, can proceed as normal
+            lastEnteredName = nameEditTxt.getText().toString();
+            lastEnteredPrice = Double.parseDouble(priceEditTxt.getText().toString());
+            lastEnteredQuantity = Integer.parseInt(quantityEditTxt.getText().toString());
+        } else {
+            //Check what caused the error for a customized error message.
+            if(!InputCheck.name(name)) {
+                throw new InvalidInput("Did not enter the item name.");
+            } else if(!InputCheck.cost(price)) {
+                throw new InvalidInput("Price can not be zero or negative.");
+            } else if(!InputCheck.quantity(quantity)) {
+                throw new InvalidInput("Quantity must be an integer and at least one.");
+            }
+        }
     }
 
     /**
