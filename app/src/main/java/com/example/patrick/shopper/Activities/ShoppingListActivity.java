@@ -280,7 +280,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                 //Set this rounded value to be in the edit text, to be shown, for the next time
                 //the user is prompted for entering a budget
                 budgetEditText.setText(new Double(budget).toString());
-
+                budgetEditText.selectAll(); //Allows the user to quickly write over old budget
                 budgetEditText.requestFocus();
 
                 budgetAlertDialog.show();
@@ -350,11 +350,14 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                 .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        budget = getEnteredBudget();
-                        //Update the global variable with its value rounded to 2dp
-                        budget = roundBudget(budget);
-
-                        updateBudget();
+                        try {
+                            String budgetAsString = getEnteredBudget();
+                            //Update the global variable with its value rounded to 2dp
+                            budget = roundBudget(Double.parseDouble(budgetAsString));
+                            updateBudget();
+                        } catch (InvalidInput e) {
+                            showMessageDialog(e.getMessage());
+                        }
                     }
                 });
         budgetAlertDialog = budgetAlertDialogBuilder.create();
@@ -454,12 +457,16 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     }
 
     /**
-     * Retrieve the values entered by the user for the budget in the dialog.
+     * Retrieve the value entered by the user for the budget in the dialog.
      */
-    private double getEnteredBudget() throws NumberFormatException {
+    private String getEnteredBudget() throws InvalidInput {
         EditText budgetEditTxt = budgetDialogView.findViewById(R.id.budgetEditText);
-        //budget = Double.parseDouble(budgetEditTxt.getText().toString());
-        return Double.parseDouble(budgetEditTxt.getText().toString());
+        String budgetAsString = budgetEditTxt.getText().toString();
+        if(InputCheck.cost(budgetAsString)) {
+            return budgetAsString;
+        } else {
+            throw new InvalidInput("Budget has to be more than zero and can't be negative.");
+        }
     }
 
     /**
