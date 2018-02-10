@@ -13,35 +13,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
         android:onClick="showPrevList"
-        app:layout_constraintBottom_toBottomOf="@+id/nextListImageBtn"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_media_previous" />
-
-    <ImageButton
-        android:id="@+id/nextListImageBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="16dp"
-        android:onClick="showNextList"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_media_next" />
+        app:srcCompat="@drawable/ic_left_arrow_disabled" />
 
     <ScrollView
         android:id="@+id/scrollView3"
         android:layout_width="368dp"
         android:layout_height="427dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/prevListImageBtn">
+        app:layout_constraintRight_toRightOf="parent">
 
         <LinearLayout
             android:id="@+id/maximizedList"
@@ -51,5 +39,19 @@
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="8dp"></LinearLayout>
     </ScrollView>
+
+    <ImageButton
+        android:id="@+id/nextListImageBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:onClick="showNextList"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView3"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_right_arrow_disabled" />
 
 </android.support.constraint.ConstraintLayout>

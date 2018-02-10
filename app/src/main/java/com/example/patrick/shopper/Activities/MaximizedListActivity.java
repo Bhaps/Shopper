@@ -51,11 +51,15 @@ public class MaximizedListActivity extends AppCompatActivity {
             //Disable both previous and next list buttons
             nextListImageBtn.setClickable(false);
             prevListImageBtn.setClickable(false);
+            nextListImageBtn.setImageResource(R.drawable.ic_right_arrow_disabled);
+            prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_disabled);
         } else {
             //There are multiple lists, can click next but can't click previous since by default
             //the first list is shown anyway
             nextListImageBtn.setClickable(true);
+            nextListImageBtn.setImageResource(R.drawable.ic_right_arrow_enabled);
             prevListImageBtn.setClickable(false);
+            prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_disabled);
         }
     }
 
@@ -170,6 +174,7 @@ public class MaximizedListActivity extends AppCompatActivity {
     private void updateListNavigationButtonClickability(int indexChange) {
         int lastListIndex = maximizedItemLists.size() - 1;
 
+        //See if it is possible to change the list index
         if(currentMaximizedListIndex == firstListIndex && indexChange == showPrevListValue) {
             //Do nothing, no previous list to display
         } else if (currentMaximizedListIndex == lastListIndex && indexChange == showNextListValue) {
@@ -178,15 +183,28 @@ public class MaximizedListActivity extends AppCompatActivity {
             currentMaximizedListIndex += indexChange;
         }
 
-        if(currentMaximizedListIndex == firstListIndex) {
+        //Update the navigational button's interactability and image resources
+        /*
+        if(currentMaximizedListIndex == firstListIndex && currentMaximizedListIndex == lastListIndex) {
             prevListImageBtn.setClickable(false);
+            prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_disabled);
+            nextListImageBtn.setClickable(false);
+            nextListImageBtn.setImageResource(R.drawable.ic_right_arrow_disabled);
+        } else*/ if(currentMaximizedListIndex == firstListIndex) {
+            prevListImageBtn.setClickable(false);
+            prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_disabled);
             nextListImageBtn.setClickable(true);
+            nextListImageBtn.setImageResource(R.drawable.ic_right_arrow_enabled);
         } else if (currentMaximizedListIndex == lastListIndex) {
             prevListImageBtn.setClickable(true);
+            prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_enabled);
             nextListImageBtn.setClickable(false);
+            nextListImageBtn.setImageResource(R.drawable.ic_right_arrow_disabled);
         } else {
             prevListImageBtn.setClickable(true);
+            prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_enabled);
             nextListImageBtn.setClickable(true);
+            nextListImageBtn.setImageResource(R.drawable.ic_right_arrow_enabled);
         }
     }
 

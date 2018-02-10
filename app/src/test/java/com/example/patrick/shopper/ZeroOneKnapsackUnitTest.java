@@ -279,6 +279,22 @@ public class ZeroOneKnapsackUnitTest {
         assertMaximizedListsEqual(solution, modelSolution);
     }
 
+    @Test
+    public void solveTest3() {
+        String itemInfo1 = "Item1" + Summary.INFO_DELIMITER + "1.00" + Summary.INFO_DELIMITER + "1";
+        String itemInfo2 = "Item2" + Summary.INFO_DELIMITER + "1.00"  + Summary.INFO_DELIMITER + "1";
+
+        String modelSolution = itemInfo1 + Summary.LIST_DELIMITER + itemInfo2;
+
+        knapsack.setBudget(1.00);
+
+        String[] items = new String[]{itemInfo1, itemInfo2};
+
+        String solution = knapsack.solve(items);
+
+        assertMaximizedListsEqual(solution, modelSolution);
+    }
+
     /**
      * Test if the correct maximized list can be calculated when an item has a quantity greater
      * than 1.
