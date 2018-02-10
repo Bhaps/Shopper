@@ -231,8 +231,10 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     private void setMaximizeBtnInteractability() {
         if(totalCost > budget) {
             maximizeBtn.setEnabled(true);
+            maximizeBtn.setImageResource(R.drawable.ic_shopping_cart);
         } else {
             maximizeBtn.setEnabled(false);
+            maximizeBtn.setImageResource(R.drawable.ic_shopping_cart_holo_light);
         }
     }
 
