@@ -44,26 +44,7 @@ public class MaximizedListActivity extends AppCompatActivity {
         processMaximizedResults();
         displayItemViews(currentMaximizedListIndex);
 
-        int numLists = maximizedItemLists.size();
-
         updateListNavigationButtonClickability(0);
-
-        /*
-        if(numLists <= 1) {
-            //It is not possible to change lists since there are not multiple lists
-            //Disable both previous and next list buttons
-            nextListImageBtn.setClickable(false);
-            prevListImageBtn.setClickable(false);
-            nextListImageBtn.setImageResource(R.drawable.ic_right_arrow_disabled);
-            prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_disabled);
-        } else {
-            //There are multiple lists, can click next but can't click previous since by default
-            //the first list is shown anyway
-            nextListImageBtn.setClickable(true);
-            nextListImageBtn.setImageResource(R.drawable.ic_right_arrow_enabled);
-            prevListImageBtn.setClickable(false);
-            prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_disabled);
-        }*/
     }
 
     /**
