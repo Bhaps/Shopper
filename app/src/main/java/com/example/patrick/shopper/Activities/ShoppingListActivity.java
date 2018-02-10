@@ -80,6 +80,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         setCustomActionBar();
         initComponents();
         loadItems();
+        loadBudget();
     }
 
     /**
@@ -92,6 +93,14 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     public void onStop() {
         super.onStop();
         saveListedItems();
+        saveEnteredBudget();
+    }
+
+    /**
+     * Save the budget entered by the user.
+     */
+    private void saveEnteredBudget() {
+        Storage.saveBudget(budget, context);
     }
 
     /**
@@ -102,6 +111,15 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         Storage.saveItemSummary(itemSummary, context);
 
         System.out.println("Will save the items: " + itemSummary);
+    }
+
+    /**
+     * Retrieve the budget from storage anf use it.
+     */
+    private void loadBudget() {
+        System.out.println(budget + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        budget = Storage.getBudget(context);
+        updateBudget();
     }
 
     /**
@@ -335,8 +353,8 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
 
     /**
      * Roudn the budget to 2 decimal places. In the situation the user has entered more than 2 dp.
-     * @param budget
-     * @return
+     * @param budget The entered budget.
+     * @return The budget rounded to 2 dp.
      */
     private double roundBudget(double budget) {
         double budgetInCents = budget * 100;

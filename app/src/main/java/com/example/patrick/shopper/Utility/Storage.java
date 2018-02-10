@@ -19,6 +19,7 @@ import java.io.OutputStreamWriter;
  * The summary was created using the Summary abstract class.
  *
  * Created by patrick on 30/01/18.
+ * @author Patrick Ma
  */
 public abstract class Storage {
 
@@ -26,13 +27,77 @@ public abstract class Storage {
     private static final String ITEM_DATA_FILENAME = "listedItems.dat";
 
 
-    public static String getBudget(Context context) {
+    /**
+     * Retrieve the budget from persistant storage.
+     * @param context
+     * @return
+     */
+    public static double getBudget(Context context) {
+        if(!fileExists(context, BUDGET_DATA_FILENAME)) {
+            createFile(context, BUDGET_DATA_FILENAME);
+        }
 
-        return  null;
+        StringBuilder stringBuilder = new StringBuilder();
+        String readLine = "";
+
+        try {
+            FileInputStream fis = context.openFileInput(BUDGET_DATA_FILENAME);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+
+
+            // Read the entire contents from the file into the StringBuilder
+            while((readLine = bufferedReader.readLine()) != null) {
+                stringBuilder.append(readLine);
+            }
+
+            bufferedReader.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Retrieved budget: " + stringBuilder.toString());
+
+        //Retrieve the budget as a String datatype.
+        String budgetString = stringBuilder.toString();
+
+        try {
+            assert (budgetString.equals("") && Double.parseDouble(budgetString) >= 0.00) : new Error("Unexpected value saved");
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        if(budgetString == "") {
+            return 0.00;
+        } else {
+            return Double.parseDouble(budgetString);
+        }
+
     }
 
-    public static void saveBudget(Context context, double budget) {
+    /**
+     * Save the budget to persistant storage.
+     * @param budget The budget entered by the user.
+     * @param context The app's context
+     */
+    public static void saveBudget(double budget, Context context) {
+        System.out.println("Provided budget: " + budget);
 
+        try {
+            FileOutputStream fos = context.openFileOutput(BUDGET_DATA_FILENAME, Context.MODE_PRIVATE);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
+            BufferedWriter bw = new BufferedWriter(outputStreamWriter);
+            System.out.println("Will write to budget: " + new Double(budget).toString());
+            bw.write(new Double(budget).toString());
+            bw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
