@@ -35,6 +35,10 @@ import java.util.concurrent.Future;
 
 
 /**
+ * Used images by  <div>Icons made by Egor Rumyantsev from https://www.flaticon.com/authors/egor-rumyantsev
+ * under the http://creativecommons.org/licenses/by/3.0/
+ *
+ *
  * The main screen that is shown when the application is started. Allows the user to add and remove
  * items into the shopping list with the item's details (name, price and quantity). The user is able
  * to enter a budget. If the total cost of the items are greater than the budget, the user can
