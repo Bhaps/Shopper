@@ -12,6 +12,7 @@ import com.example.patrick.shopper.CustomViews.ItemView;
 import com.example.patrick.shopper.R;
 import com.example.patrick.shopper.Utility.Summary;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 /**
@@ -46,6 +47,10 @@ public class MaximizedListActivity extends AppCompatActivity {
         displayItemViews(currentMaximizedListIndex);
 
         int numLists = maximizedItemLists.size();
+
+        updateListNavigationButtonClickability(0);
+
+        /*
         if(numLists <= 1) {
             //It is not possible to change lists since there are not multiple lists
             //Disable both previous and next list buttons
@@ -60,7 +65,7 @@ public class MaximizedListActivity extends AppCompatActivity {
             nextListImageBtn.setImageResource(R.drawable.ic_right_arrow_enabled);
             prevListImageBtn.setClickable(false);
             prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_disabled);
-        }
+        }*/
     }
 
     /**
@@ -72,27 +77,31 @@ public class MaximizedListActivity extends AppCompatActivity {
         final String NO_SOLUTION = "";
 
         String maximizedListSummaries = getMaximizedLists();
-        String[] maximizedListSummariesArray = Summary.separateMaximizedListSolutionss(maximizedListSummaries);
 
-        for(String maximizedListSummary : maximizedListSummariesArray) {
+        if(!maximizedListSummaries.equals(NO_SOLUTION)) {
 
-            String[] items = Summary.separateSummarizedList(maximizedListSummary);
+            String[] maximizedListSummariesArray = Summary.separateMaximizedListSolutionss(maximizedListSummaries);
 
-            //The array of items containing all items for this maximized list.
-            ArrayList<ItemView> maximizedItems = new ArrayList<>();
-            for (String itemInfo : items) {
-                String itemName = Summary.extractName(itemInfo);
-                double itemCost = Summary.extractCost(itemInfo);
-                int itemQuantity = Summary.extractQuantity(itemInfo);
+            for (String maximizedListSummary : maximizedListSummariesArray) {
 
-                ItemView itemView = new ItemView(context, itemName, itemCost, itemQuantity);
-                itemView.hideRemoveButton();
-                maximizedItems.add(itemView);
+                String[] items = Summary.separateSummarizedList(maximizedListSummary);
+
+                //The array of items containing all items for this maximized list.
+                ArrayList<ItemView> maximizedItems = new ArrayList<>();
+                for (String itemInfo : items) {
+                    String itemName = Summary.extractName(itemInfo);
+                    double itemCost = Summary.extractCost(itemInfo);
+                    int itemQuantity = Summary.extractQuantity(itemInfo);
+
+                    ItemView itemView = new ItemView(context, itemName, itemCost, itemQuantity);
+                    itemView.hideRemoveButton();
+                    maximizedItems.add(itemView);
+                }
+
+                maximizedItemLists.add(maximizedItems);
+
+
             }
-
-            maximizedItemLists.add(maximizedItems);
-
-
         }
     }
 
@@ -132,8 +141,12 @@ public class MaximizedListActivity extends AppCompatActivity {
      * @oaram maximizedListIndex The index for the list to be displayed from maximizedItemLists.
      */
     private void displayItemViews(int maximizedListIndex) {
-        for (ItemView itemView : maximizedItemLists.get(maximizedListIndex)) {
-            maximizedListView.addView(itemView);
+        if(maximizedItemLists.size() == 0) {
+            //Do nothing, there are no solutions to add
+        } else {
+            for (ItemView itemView : maximizedItemLists.get(maximizedListIndex)) {
+                maximizedListView.addView(itemView);
+            }
         }
     }
 
