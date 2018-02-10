@@ -11,8 +11,6 @@ import android.widget.LinearLayout;
 import com.example.patrick.shopper.CustomViews.ItemView;
 import com.example.patrick.shopper.R;
 import com.example.patrick.shopper.Utility.Summary;
-
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 /**
@@ -186,6 +184,7 @@ public class MaximizedListActivity extends AppCompatActivity {
      */
     private void updateListNavigationButtonClickability(int indexChange) {
         int lastListIndex = maximizedItemLists.size() - 1;
+        int noSolutionIndexResult = -1; //Occurred because maximizedItemLists.size is 0
 
         //See if it is possible to change the list index
         if(currentMaximizedListIndex == firstListIndex && indexChange == showPrevListValue) {
@@ -197,13 +196,19 @@ public class MaximizedListActivity extends AppCompatActivity {
         }
 
         //Update the navigational button's interactability and image resources
-        /*
-        if(currentMaximizedListIndex == firstListIndex && currentMaximizedListIndex == lastListIndex) {
+        if(lastListIndex == noSolutionIndexResult) {
+            //There is no solution, disable both buttons
             prevListImageBtn.setClickable(false);
             prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_disabled);
             nextListImageBtn.setClickable(false);
             nextListImageBtn.setImageResource(R.drawable.ic_right_arrow_disabled);
-        } else*/ if(currentMaximizedListIndex == firstListIndex) {
+        } else if(currentMaximizedListIndex == firstListIndex && currentMaximizedListIndex == lastListIndex) {
+            //There is only one solution, so disable both buttons
+            prevListImageBtn.setClickable(false);
+            prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_disabled);
+            nextListImageBtn.setClickable(false);
+            nextListImageBtn.setImageResource(R.drawable.ic_right_arrow_disabled);
+        } else if(currentMaximizedListIndex == firstListIndex) {
             prevListImageBtn.setClickable(false);
             prevListImageBtn.setImageResource(R.drawable.ic_left_arrow_disabled);
             nextListImageBtn.setClickable(true);
