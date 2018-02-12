@@ -453,7 +453,13 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         } else {
             //Check what caused the error for a customized error message.
             if(!InputCheck.name(name)) {
-                throw new InvalidInput("Did not enter the item name.");
+
+                String errorMessage = "The following characters can not be in your item name ";
+                for(String blacklistedChar : Summary.BLACKLISTED_CHARS) {
+                    errorMessage += blacklistedChar + " ";
+                }
+
+                throw new InvalidInput(errorMessage);
             } else if(!InputCheck.cost(price)) {
                 throw new InvalidInput("Price can not be zero or negative.");
             } else if(!InputCheck.quantity(quantity)) {

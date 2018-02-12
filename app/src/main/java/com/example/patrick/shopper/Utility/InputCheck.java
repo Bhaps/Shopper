@@ -10,12 +10,29 @@ package com.example.patrick.shopper.Utility;
 public abstract class InputCheck {
 
     /**
+     * Check if the value contains the blacklisted characters.
+     * @return true if it contains the blacklisted characters, false otherwise.
+     */
+    public static boolean passesBlacklistedCharCheck(String value) {
+        try {
+            for (String blacklistedChar : Summary.BLACKLISTED_CHARS) {
+                if (value.contains(blacklistedChar)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    /**
      * Checks if the item name is valid.
-     * @param string String to be checked
+     * @param nameAsString String to be checked
      * @return true if valid, false otherwise.
      */
-    public static boolean name (String string) {
-        if(string == null || string.equals("")) {
+    public static boolean name (String nameAsString) {
+        if(nameAsString == null || nameAsString.equals("") || !passesBlacklistedCharCheck(nameAsString)) {
             return false;
         } else  {
             return true;
@@ -37,6 +54,8 @@ public abstract class InputCheck {
             }
         } catch (NumberFormatException e) {
             return false;
+        } catch (NullPointerException e) {
+            return false;
         }
     }
 
@@ -54,6 +73,8 @@ public abstract class InputCheck {
                 return true;
             }
         } catch (NumberFormatException e) {
+            return false;
+        } catch (NullPointerException e) {
             return false;
         }
     }
