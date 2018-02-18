@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -349,56 +350,85 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                 dialogInterface.cancel();
             }
         })
-                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                //Set the listener to null so we can later add a listener to the button
+                //this will avoid the Dialog.dismiss() being called automatically once the
+                //button is clicked. If the user enters an invalid input want to keep this dialog
+                //open and display the error message on top of it
+                .setPositiveButton("Okay", null);
+        itemDetailsAlertDialog = itemDetailsAlertDialogBuilder.create();
+        //Add actions to be taken when the Okay button is clicked. Adding listeners this way
+        //will avoid Dialog.dismiss() being called automatically. Will only dismiss the input dialog
+        //when the entered values are all valid, otherwise display an error message on top of the
+        //input dialog
+        itemDetailsAlertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialogInterface) {
+                Button okayBtn = itemDetailsAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                okayBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(View view) {
                         //Attempt to retrieve the item details entered by the user, if they
                         //are not valid (and InvalidInput is thrown) then display an error
                         //message using a dialog.
                         try {
                             getEnteredItemValues();
-                            dialogInterface.dismiss();
-
                             //Round the value to 2dp in case the user entered more than 2 decimals
                             lastEnteredPrice = roundMoney(lastEnteredPrice);
 
                             ItemView newItem = createItem(lastEnteredName, lastEnteredPrice, lastEnteredQuantity);
                             addItemToList(newItem);
-                        } catch (InvalidInput e) {
                             dialogInterface.dismiss();
+                        } catch (InvalidInput e) {
                             showMessageDialog(e.getMessage());
                         }
                     }
                 });
-        itemDetailsAlertDialog = itemDetailsAlertDialogBuilder.create();
+            }
+        });
         //Show the keyboard when top EditText, nameEditText, is focused.
         Window itemWindow = itemDetailsAlertDialog.getWindow();
         //Need to set some flags such that the keyboard will show up when the nameEditTxt is focused
         itemWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
         //Create the dialog for prompting the user to enter their budget
-        AlertDialog.Builder budgetAlertDialogBuilder = new AlertDialog.Builder(context);
+        final AlertDialog.Builder budgetAlertDialogBuilder = new AlertDialog.Builder(context);
         budgetAlertDialogBuilder.setView(budgetDialogView);
+        //using .setNegativeButton and .setPositiveButton will automatically dismiss the dialog
         budgetAlertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.cancel();
             }
         })
-                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                //Set the listener to null so we can later add a listener to the button
+                //this will avoid the Dialog.dismiss() being called automatically once the
+                //button is clicked. If the user enters an invalid input want to keep this dialog
+                //open and display the error message on top of it
+                .setPositiveButton("Okay", null);
+        budgetAlertDialog = budgetAlertDialogBuilder.create();
+        //Adding listeners this way will avoid Dialog.dismiss() being called automatically. Will
+        //only dismiss the input dialog when the entered values are all valid, otherwise display an
+        //error message on top of the input dialog
+        budgetAlertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialogInterface) {
+                Button okayBtn = budgetAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                okayBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(View view) {
                         try {
                             String budgetAsString = getEnteredBudget();
                             //Update the global variable with its value rounded to 2dp
                             budget = roundMoney(Double.parseDouble(budgetAsString));
                             updateBudget();
+                            dialogInterface.dismiss();
                         } catch (InvalidInput e) {
                             showMessageDialog(e.getMessage());
                         }
                     }
                 });
-        budgetAlertDialog = budgetAlertDialogBuilder.create();
+            }
+        });
         //Need to set flags to allow the keyboard to show up for focused views
         Window budgetWindow = budgetAlertDialog.getWindow();
         budgetWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
@@ -486,7 +516,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
             //Check what caused the error for a customized error message.
             if(!InputCheck.name(name)) {
 
-                String errorMessage = "The following characters can not be in your item name ";
+                String errorMessage = "The item name cannot be empty or have the following characters ";
                 for(String blacklistedChar : Summary.BLACKLISTED_CHARS) {
                     errorMessage += blacklistedChar + " ";
                 }
