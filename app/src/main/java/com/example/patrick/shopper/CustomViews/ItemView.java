@@ -110,7 +110,20 @@ public class ItemView extends LinearLayout {
 
     }
 
+    /**
+     * Called when the ItemView's values have changed and want to set then update the new values
+     * to be displayed.
+     * @param name The new name.
+     * @param price The new price.
+     * @param quantity The new quantity.
+     */
+    public void edit(String name, double price, int quantity) {
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
 
+        updateDisplay();
+    }
 
     /**
      * Updates the texts displayed by the TextViews on the custom view.

@@ -70,12 +70,17 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     private View budgetDialogView;
     private View progressDialogView;
     private View messageDialogView;
+    private View editItemDetailsDialogView;
 
     //AlertDialog.show() are used to bring up prompts for the user to enter values
     private AlertDialog itemDetailsAlertDialog;
+    private AlertDialog editItemDetailsAlertDialog;
     private AlertDialog budgetAlertDialog;
     private AlertDialog progressAlertDialog;
     private AlertDialog messageAlertDialog;
+
+    //The ItemView that has been clicked so the user can change its details
+    private ItemView itemViewToEdit;
 
 
     private Future<String> futureCall;
@@ -298,6 +303,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         itemDetailsDialogView = layoutInflater.inflate(R.layout.prompt_item_details, null);
+        editItemDetailsDialogView = layoutInflater.inflate(R.layout.prompt_item_details, null);
         budgetDialogView = layoutInflater.inflate(R.layout.prompt_budget_view, null);
         progressDialogView = layoutInflater.inflate(R.layout.loading_view, null);
         messageDialogView = layoutInflater.inflate(R.layout.message_view, null);
@@ -329,11 +335,31 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     }
 
     /**
-     * Create an ItemView containing all the information of the represented item.
+     * Create an ItemView containing all the information of the represented item. Also add a
+     * View.OnClickListener to allow the user to edit the items details.
+     *
      * @return ItemView containing details of an item it represents.
      */
     private ItemView createItem(String name, double price, int quantity) {
         ItemView newItem = new ItemView(context, name, price, quantity);
+        newItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemViewToEdit = (ItemView) view;
+
+                //Set the fields with the item's existing details
+                EditText nameEditTxt = editItemDetailsDialogView.findViewById(R.id.enterName);
+                EditText priceEditTxt = editItemDetailsDialogView.findViewById(R.id.enterPrice);
+                EditText quantityEditTxt = editItemDetailsDialogView.findViewById(R.id.enterQuantity);
+
+                nameEditTxt.setText(itemViewToEdit.getName());
+                priceEditTxt.setText(String.format("%.2f", itemViewToEdit.getSinglePrice()));
+                quantityEditTxt.setText(String.format("%d", itemViewToEdit.getQuantity()));
+
+                nameEditTxt.requestFocus();
+                editItemDetailsAlertDialog.show();
+            }
+        });
         return newItem;
     }
 
@@ -371,7 +397,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                         //are not valid (and InvalidInput is thrown) then display an error
                         //message using a dialog.
                         try {
-                            getEnteredItemValues();
+                            getEnteredItemValues(itemDetailsDialogView);
                             //Round the value to 2dp in case the user entered more than 2 decimals
                             lastEnteredPrice = roundMoney(lastEnteredPrice);
 
@@ -389,6 +415,49 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         Window itemWindow = itemDetailsAlertDialog.getWindow();
         //Need to set some flags such that the keyboard will show up when the nameEditTxt is focused
         itemWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+
+        //Create the dialog for allowing the user to edit the an ItemView
+        AlertDialog.Builder editItemDetailsAlertDialogBuilder = new AlertDialog.Builder(context);
+        editItemDetailsAlertDialogBuilder.setView(editItemDetailsDialogView);
+        editItemDetailsAlertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        })
+                //Will add the listener later instead of using this way to avoid having the dialog
+                //automatically close. Want to display error messages on top of this dialog.
+                .setPositiveButton("Okay", null);
+        editItemDetailsAlertDialog = editItemDetailsAlertDialogBuilder.create();
+        editItemDetailsAlertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialogInterface) {
+                Button okayBtn = editItemDetailsAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                okayBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        try {
+                            getEnteredItemValues(editItemDetailsDialogView);
+
+                            //Round the value to 2dp in case the user entered more than 2 decimals
+                            lastEnteredPrice = roundMoney(lastEnteredPrice);
+
+                            itemViewToEdit.edit(lastEnteredName, lastEnteredPrice, lastEnteredQuantity);
+
+                            dialogInterface.dismiss();
+                        } catch (InvalidInput e) {
+                            showMessageDialog(e.getMessage());
+                        }
+                    }
+                });
+            }
+        });
+        //Show the keyboard when top EditText, nameEditText, is focused.
+        Window editItemWindow = editItemDetailsAlertDialog.getWindow();
+        //Need to set some flags such that the keyboard will show up when the nameEditTxt is focused
+        editItemWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
 
         //Create the dialog for prompting the user to enter their budget
         final AlertDialog.Builder budgetAlertDialogBuilder = new AlertDialog.Builder(context);
@@ -432,6 +501,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         //Need to set flags to allow the keyboard to show up for focused views
         Window budgetWindow = budgetAlertDialog.getWindow();
         budgetWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
 
         //Create the dialog for displaying the progress bar when the user has selected the
         //option to maximize their shopping list
@@ -496,12 +566,13 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     /**
      * Retrieve the values entered by the user from the EditText fields in the dialog.
      *
+     * @param dialogView The view used to inflate the alert dialog.
      * @return The entered name, cost and quantity of the item as a String array in that order.
      */
-    private void getEnteredItemValues() throws InvalidInput {
-        EditText nameEditTxt = itemDetailsDialogView.findViewById(R.id.enterName);
-        EditText priceEditTxt = itemDetailsDialogView.findViewById(R.id.enterPrice);
-        EditText quantityEditTxt = itemDetailsDialogView.findViewById(R.id.enterQuantity);
+    private void getEnteredItemValues(View dialogView) throws InvalidInput {
+        EditText nameEditTxt = dialogView.findViewById(R.id.enterName);
+        EditText priceEditTxt = dialogView.findViewById(R.id.enterPrice);
+        EditText quantityEditTxt = dialogView.findViewById(R.id.enterQuantity);
 
         String name = nameEditTxt.getText().toString();
         String price = priceEditTxt.getText().toString();
