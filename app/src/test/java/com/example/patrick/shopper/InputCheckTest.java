@@ -6,7 +6,6 @@ import com.example.patrick.shopper.Utility.Summary;
 import org.junit.Test;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 
 /**
  * Created by patrick on 10/02/18.
@@ -55,9 +54,7 @@ public class InputCheckTest {
 
     @Test
     public void nameTest10() {
-        System.out.println(InputCheck.name("\\"));
         assertFalse(InputCheck.name("\\"));
-        fail();
     }
 
     @Test
@@ -83,6 +80,16 @@ public class InputCheckTest {
     @Test
     public void costTest5() {
         assertFalse(InputCheck.cost(null));
+    }
+
+    @Test
+    public void costTest6() {assertFalse(InputCheck.name("5.0" + Summary.INFO_DELIMITER));
+    }
+
+    @Test
+    public void costTest7() {
+        Double value = Double.MAX_VALUE;
+        assertTrue(InputCheck.name(value.toString()));
     }
 
     @Test
@@ -113,6 +120,10 @@ public class InputCheckTest {
     @Test
     public void quantityTest6() {
         assertFalse(InputCheck.quantity("Not a number"));
+    }
+
+    @Test
+    public void quantityTest7() {assertFalse(InputCheck.name("5" + Summary.INFO_DELIMITER));
     }
 
     @Test

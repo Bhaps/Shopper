@@ -196,24 +196,50 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         itemList.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
             @Override
             public void onChildViewAdded(View parent, View child) {
+                /*
                 ItemView addedItem = (ItemView) child;
                 increaseTotalCost(addedItem.getAllItemsPrice());
-                updateTotalCost();
+                updateTotalCost();*/
+                recalculateTotalCost();
+                //The total cost has changed check if its still possible to maximize the list
+                //(i.e. totalCost > budget);
+                setMaximizeBtnInteractability();
             }
 
             @Override
             public void onChildViewRemoved(View parent, View child) {
+                /*
                 ItemView removedItem = (ItemView) child;
                 decreaseTotalCost(removedItem.getAllItemsPrice());
-                updateTotalCost();
+                updateTotalCost();*/
+                recalculateTotalCost();
+                //The total cost has changed check if its still possible to maximize the list
+                //(i.e. totalCost > budget);
+                setMaximizeBtnInteractability();
             }
         });
+    }
+
+    /**
+     * Recalculate the total cost, set the new value to the variable totalCost and display it.
+     */
+    private void recalculateTotalCost() {
+        double runningTotal = 0;
+        for(int i = 0; i < itemList.getChildCount(); i++) {
+            ItemView item = (ItemView) itemList.getChildAt(i);
+            runningTotal += item.getSinglePrice();
+
+        }
+        totalCost = runningTotal;
+        totalCostTxtView.setText(String.format(LOCALE,"%.2f", totalCost));
+
     }
 
     /**
      * Update the total cost of all the listed items displayed and check if the maximizeBtn
      * should be enabled or disabled.
      */
+    @Deprecated
     private void updateTotalCost() {
         totalCostTxtView.setText(String.format(LOCALE,"%.2f", totalCost));
         setMaximizeBtnInteractability();
@@ -246,6 +272,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     /**
      * Item added to the list, increase the total price by the added item(s).
      */
+    @Deprecated
     private void increaseTotalCost(double itemPrice) {
         totalCost += itemPrice;
     }
@@ -253,6 +280,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     /**
      * Item removed from the list, decrease the total price by the removed item(s).
      */
+    @Deprecated
     private void decreaseTotalCost(double itemPrice) {
         totalCost -= itemPrice;
     }
@@ -330,6 +358,10 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                         try {
                             getEnteredItemValues();
                             dialogInterface.dismiss();
+
+                            //Round the value to 2dp in case the user entered more than 2 decimals
+                            lastEnteredPrice = roundMoney(lastEnteredPrice);
+
                             ItemView newItem = createItem(lastEnteredName, lastEnteredPrice, lastEnteredQuantity);
                             addItemToList(newItem);
                         } catch (InvalidInput e) {
@@ -359,7 +391,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                         try {
                             String budgetAsString = getEnteredBudget();
                             //Update the global variable with its value rounded to 2dp
-                            budget = roundBudget(Double.parseDouble(budgetAsString));
+                            budget = roundMoney(Double.parseDouble(budgetAsString));
                             updateBudget();
                         } catch (InvalidInput e) {
                             showMessageDialog(e.getMessage());
@@ -391,15 +423,15 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
     }
 
     /**
-     * Roudn the budget to 2 decimal places. In the situation the user has entered more than 2 dp.
-     * @param budget The entered budget.
+     * Round the money to 2 decimal places. In the situation the user has entered more than 2 dp.
+     * @param money The entered budget.
      * @return The budget rounded to 2 dp.
      */
-    private double roundBudget(double budget) {
-        double budgetInCents = budget * 100;
-        double roundedBudgetInCents = Math.round(budgetInCents);
-        double roundedBudgetInDollars = roundedBudgetInCents / 100;
-        return roundedBudgetInDollars;
+    private double roundMoney(double money) {
+        double moneyInCents = money * 100;
+        double roundedMoneyInCents = Math.round(moneyInCents);
+        double roundedMoneyInDollars = roundedMoneyInCents / 100;
+        return roundedMoneyInDollars;
     }
 
     /**
