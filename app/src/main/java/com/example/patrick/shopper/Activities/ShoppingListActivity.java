@@ -233,7 +233,7 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
         double runningTotal = 0;
         for(int i = 0; i < itemList.getChildCount(); i++) {
             ItemView item = (ItemView) itemList.getChildAt(i);
-            runningTotal += item.getSinglePrice();
+            runningTotal += item.getAllItemsPrice();
 
         }
         totalCost = runningTotal;
@@ -444,6 +444,10 @@ public class ShoppingListActivity extends AppCompatActivity implements ThreadCom
                             lastEnteredPrice = roundMoney(lastEnteredPrice);
 
                             itemViewToEdit.edit(lastEnteredName, lastEnteredPrice, lastEnteredQuantity);
+
+                            //The quantity or price of the item could've changed, so the total cost
+                            //could change
+                            recalculateTotalCost();
 
                             dialogInterface.dismiss();
                         } catch (InvalidInput e) {
