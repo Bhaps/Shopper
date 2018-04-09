@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.patrick.shopper.Activities.MaximizedListActivity"
+    tools:context="com.gmail.patrickma345.shopper.Activities.MaximizedListActivity"
     tools:showIn="@layout/activity_maximized_list">
 
     <ImageButton
@@ -20,7 +20,8 @@
         app:layout_constraintBottom_toTopOf="@+id/scrollView3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_left_arrow_disabled" />
+        app:srcCompat="@drawable/ic_left_arrow_disabled"
+        android:layout_marginLeft="16dp" />
 
     <ScrollView
         android:id="@+id/scrollView3"

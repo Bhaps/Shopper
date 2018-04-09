@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.patrick.shopper.Activities.MaximizedListActivity">
+    tools:context="com.gmail.patrickma345.shopper.Activities.MaximizedListActivity">
 
     <include
         layout="@layout/content_maximized_list"
-        android:layout_height="480dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         tools:layout_editor_absoluteY="31dp" />
 
 </android.support.design.widget.CoordinatorLayout>

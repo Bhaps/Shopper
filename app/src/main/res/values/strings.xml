@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SHOPPER</string>
+    <string name="app_name">BUDGET</string>
     <string name="budget_prompt">Enter your Budget:</string>
     <string name="budget_lbl">Your budget:</string>
     <string name="budget_hint">0.00</string>
